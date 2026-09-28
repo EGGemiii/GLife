@@ -767,6 +767,76 @@
 }
 
 /* Full LifeOS calendar */
+
+/* Dashboard v53 - action-oriented daily and weekly overview */
+.dashboard-v53{max-width:1600px;margin:0 auto}
+.dashboard-v53 .clickable{cursor:pointer;transition:transform .16s ease,border-color .16s ease,box-shadow .16s ease}
+.dashboard-v53 .clickable:hover{transform:translateY(-2px);border-color:#c9c5ff;box-shadow:0 10px 30px rgba(79,70,229,.08)}
+.dashboard-v53 .dash-card-subtitle{font-size:11px;color:#8a94a3;margin-top:3px}
+.dashboard-v53 .dashboard-action-stats{grid-template-columns:repeat(4,minmax(0,1fr))}
+.dashboard-v53 .dashboard-primary-grid{grid-template-columns:minmax(0,1.55fr) minmax(320px,.75fr);margin-bottom:16px}
+.dashboard-v53 .dashboard-secondary-grid{grid-template-columns:minmax(0,1.2fr) minmax(340px,.8fr);margin-top:16px}
+.dashboard-v53 .dashboard-bottom-grid{grid-template-columns:1fr 1fr;margin-top:16px}
+.dashboard-v53 .dashboard-week-card{margin-top:16px}
+.dashboard-v53 .dash-status-pill{font-size:10px;font-weight:800;padding:6px 9px;border-radius:999px;background:#ecfdf3;color:#067647}
+.dashboard-v53 .dash-status-pill.attention{background:#fff4e5;color:#b54708}
+.dashboard-v53 .dash-status-pill.urgent{background:#fff0f0;color:#b42318}
+.dashboard-v53 .dash-brief-section+.dash-brief-section{margin-top:17px;padding-top:16px;border-top:1px solid #edf0f3}
+.dashboard-v53 .dash-section-title{display:flex;justify-content:space-between;align-items:center;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.05em;color:#667085;margin-bottom:3px}
+.dashboard-v53 .dash-week-timeline{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:9px}
+.dashboard-v53 .dash-week-day{min-height:116px;border:1px solid #e7e9ed;border-radius:11px;padding:10px;background:#fafbfc}
+.dashboard-v53 .dash-week-day.today{border-color:#a7a0ff;background:#f6f5ff}
+.dashboard-v53 .dash-week-day-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.dashboard-v53 .dash-week-day-head strong{font-size:11px}
+.dashboard-v53 .dash-week-day-head span{font-size:10px;color:#98a2b3}
+.dashboard-v53 .dash-week-item{font-size:10px;line-height:1.3;padding:5px 6px;border-radius:6px;margin-top:5px;background:#eef2ff;color:#4338ca;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dashboard-v53 .dash-week-item.task-item{background:#ecfdf3;color:#067647}
+.dashboard-v53 .dash-week-item.holiday-item{background:#fff4e5;color:#b54708}
+.dashboard-v53 .dash-week-empty{font-size:10px;color:#b0b7c3;padding-top:8px}
+.dashboard-v53 .dash-header-links{display:flex;gap:14px}
+.dashboard-v53 .dash-finance-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.dashboard-v53 .dash-finance-metric{border:1px solid #e7e9ed;border-radius:10px;padding:12px;background:#fafbfc}
+.dashboard-v53 .dash-finance-metric span{display:block;font-size:10px;color:#7b8491;margin-bottom:5px}
+.dashboard-v53 .dash-finance-metric strong{font-size:17px}
+.dashboard-v53 .dash-finance-footer{display:flex;justify-content:space-between;gap:12px;margin-top:12px;padding-top:11px;border-top:1px solid #edf0f3;font-size:10px;color:#667085}
+.dashboard-v53 .dash-market-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px}
+.dashboard-v53 .dash-market-item{border:1px solid #e7e9ed;border-radius:10px;padding:12px;background:#fafbfc}
+.dashboard-v53 .dash-market-item span{display:block;font-size:10px;color:#667085}
+.dashboard-v53 .dash-market-item strong{display:block;font-size:17px;margin:7px 0 3px}
+.dashboard-v53 .dash-market-item small{font-size:9px;color:#98a2b3}
+.dashboard-v53 .dash-planning-list{display:flex;flex-direction:column}
+.dashboard-v53 .dash-planning-row{display:flex;justify-content:space-between;gap:16px;align-items:center;padding:11px 0;border-bottom:1px solid #edf0f3;font-size:11px}
+.dashboard-v53 .dash-planning-row:last-child{border-bottom:0}
+.dashboard-v53 .dash-planning-row span{color:#667085}
+.dashboard-v53 .dash-planning-row strong{text-align:right;font-size:11px}
+.dashboard-v53 .dash-quick-actions{grid-template-columns:repeat(2,minmax(0,1fr));margin-top:0}
+.dashboard-v53 .negative-value{color:#d92d20!important}
+.dashboard-v53 .positive-value{color:#067647!important}
+.life-shell.dark-mode .dashboard-v53 .dash-card-subtitle,
+.life-shell.dark-mode .dashboard-v53 .dash-finance-footer,
+.life-shell.dark-mode .dashboard-v53 .dash-section-title,
+.life-shell.dark-mode .dashboard-v53 .dash-planning-row span{color:#93a0b7!important}
+.life-shell.dark-mode .dashboard-v53 .dash-week-day,
+.life-shell.dark-mode .dashboard-v53 .dash-finance-metric,
+.life-shell.dark-mode .dashboard-v53 .dash-market-item{background:#171c2f!important;border-color:#303a55!important}
+.life-shell.dark-mode .dashboard-v53 .dash-week-day.today{background:#231d45!important;border-color:#7047ff!important}
+.life-shell.dark-mode .dashboard-v53 .dash-brief-section+.dash-brief-section,
+.life-shell.dark-mode .dashboard-v53 .dash-finance-footer,
+.life-shell.dark-mode .dashboard-v53 .dash-planning-row{border-color:#303a55!important}
+@media(max-width:1100px){
+  .dashboard-v53 .dashboard-primary-grid,
+  .dashboard-v53 .dashboard-secondary-grid,
+  .dashboard-v53 .dashboard-bottom-grid{grid-template-columns:1fr}
+  .dashboard-v53 .dash-week-timeline{grid-template-columns:repeat(4,minmax(0,1fr))}
+}
+@media(max-width:760px){
+  .dashboard-v53 .dashboard-action-stats{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .dashboard-v53 .dash-week-timeline{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .dashboard-v53 .dash-market-grid{grid-template-columns:1fr}
+  .dashboard-v53 .dash-finance-grid{grid-template-columns:1fr 1fr}
+  .dashboard-v53 .dash-finance-footer{flex-direction:column}
+}
+
 .life-calendar-page{min-height:100vh;background:#f5f7fa;color:#17202a;padding:28px 34px 50px}
 .calendar-topbar{display:flex;justify-content:space-between;align-items:center;gap:20px;margin-bottom:22px}
 .calendar-topbar h1{margin:0 0 5px;font-size:29px;letter-spacing:-.7px}
@@ -2984,51 +3054,224 @@ window.lifeExchangeTab=function(tab){
 
   <main class="life-main">
     <section id="page-dashboard" class="life-page active">
-      <div class="life-dashboard">
+      <div class="life-dashboard dashboard-v53">
         <div class="life-topbar">
-          <div><h1>Good morning, Ahmed</h1><p class="muted" id="life-dashboard-date">Loading date...</p></div>
-          <div class="top-actions"><button onclick="alert('Global search coming next')">⌕ Search</button><button class="primary" onclick="showPage('money'); setTimeout(openAddExpenseModal, 50)">＋ Add Expense</button></div>
+          <div>
+            <h1 id="life-dashboard-greeting">Good morning, Ahmed</h1>
+            <p class="muted" id="life-dashboard-date">Loading date...</p>
+          </div>
+          <div class="top-actions">
+            <button onclick="showPage('tasks');setTimeout(()=>lifeTasksOpenModal&&lifeTasksOpenModal(),80)">＋ Task</button>
+            <button onclick="showPage('calendar');setTimeout(()=>openLifeEventModal&&openLifeEventModal(),80)">＋ Event</button>
+            <button class="primary" onclick="showPage('money'); setTimeout(openAddExpenseModal, 50)">＋ Expense</button>
+          </div>
         </div>
-        <section class="grid stats">
-          <div class="life-card"><div class="stat-label">Tasks today</div><div class="stat-value" id="life-task-stat">0 / 0</div><div class="stat-note" id="life-task-note">Loading tasks...</div></div>
-          <div class="life-card"><div class="stat-label">Monthly spending</div><div class="stat-value" id="life-money-total">Loading...</div><div class="stat-note">From your financial tracker</div></div>
-          <div class="life-card"><div class="stat-label">Work progress</div><div class="stat-value">72%</div><div class="stat-note">On track</div></div>
-          <div class="life-card"><div class="stat-label">Upcoming</div><div class="stat-value" id="life-upcoming-count">0</div><div class="stat-note">Events & holidays · next 7 days</div></div>
+
+        <!-- Daily action strip -->
+        <section class="grid stats dashboard-action-stats">
+          <div class="life-card dash-kpi clickable" onclick="showPage('tasks')">
+            <div class="stat-label">Needs attention</div>
+            <div class="stat-value" id="dash-attention-count">0</div>
+            <div class="stat-note" id="dash-attention-note">Checking overdue items...</div>
+          </div>
+          <div class="life-card dash-kpi clickable" onclick="showPage('tasks')">
+            <div class="stat-label">Tasks today</div>
+            <div class="stat-value" id="life-task-stat">0 / 0</div>
+            <div class="stat-note" id="life-task-note">Loading tasks...</div>
+          </div>
+          <div class="life-card dash-kpi clickable" onclick="showPage('calendar')">
+            <div class="stat-label">Next 7 days</div>
+            <div class="stat-value" id="life-upcoming-count">0</div>
+            <div class="stat-note" id="dash-upcoming-note">Events, holidays & tasks</div>
+          </div>
+          <div class="life-card dash-kpi clickable" onclick="showPage('money')">
+            <div class="stat-label">This month remaining</div>
+            <div class="stat-value" id="dash-month-remaining">Loading...</div>
+            <div class="stat-note" id="dash-month-remaining-note">After planned expenses</div>
+          </div>
         </section>
-        <section class="grid main-grid">
-          <div class="life-card">
-            <div class="card-header"><h2>Today</h2><span class="link" onclick="showPage('calendar')">Open calendar</span></div>
-            <div id="life-dashboard-events"><div class="life-dashboard-empty">Loading calendar...</div></div>
+
+        <section class="grid dashboard-primary-grid">
+          <!-- Daily Brief -->
+          <div class="life-card dashboard-brief-card">
+            <div class="card-header">
+              <div>
+                <h2>Daily brief</h2>
+                <div class="dash-card-subtitle">What needs your attention today</div>
+              </div>
+              <span class="dash-status-pill" id="dash-day-status">Checking...</span>
+            </div>
+
+            <div class="dash-brief-section">
+              <div class="dash-section-title">
+                <span>Today's schedule</span>
+                <span class="link" onclick="showPage('calendar')">Calendar</span>
+              </div>
+              <div id="life-dashboard-events"><div class="life-dashboard-empty">Loading calendar...</div></div>
+            </div>
+
+            <div class="dash-brief-section">
+              <div class="dash-section-title">
+                <span>Today's tasks</span>
+                <span class="link" onclick="showPage('tasks')">Tasks</span>
+              </div>
+              <div id="life-dashboard-tasks"><div class="life-dashboard-empty">Loading tasks...</div></div>
+            </div>
           </div>
-          <div class="life-card">
-            <div class="card-header"><h2>Weather</h2><span class="link">7 day</span></div>
-            <div class="weather"><div><div class="temp">31°</div><div class="weather-meta">Feels like 34° · Clear<br>High 38° · Low 27°</div></div><div class="weather-icon">☀️</div></div>
-            <div class="forecast"><div>Sat<strong>☀️ 38°</strong>27°</div><div>Sun<strong>☀️ 39°</strong>27°</div><div>Mon<strong>☀️ 38°</strong>26°</div><div>Tue<strong>🌤️ 37°</strong>25°</div><div>Wed<strong>☀️ 36°</strong>25°</div></div>
+
+          <!-- Weather -->
+          <div class="life-card dashboard-weather-card">
+            <div class="card-header">
+              <div>
+                <h2>Weather</h2>
+                <div class="dash-card-subtitle">Today & the next few days</div>
+              </div>
+              <span class="link">7 day</span>
+            </div>
+            <div class="weather">
+              <div>
+                <div class="temp">31°</div>
+                <div class="weather-meta">Feels like 34° · Clear<br>High 38° · Low 27°</div>
+              </div>
+              <div class="weather-icon">☀️</div>
+            </div>
+            <div class="forecast">
+              <div>Sat<strong>☀️ 38°</strong>27°</div>
+              <div>Sun<strong>☀️ 39°</strong>27°</div>
+              <div>Mon<strong>☀️ 38°</strong>26°</div>
+              <div>Tue<strong>🌤️ 37°</strong>25°</div>
+              <div>Wed<strong>☀️ 36°</strong>25°</div>
+            </div>
           </div>
-          <div class="life-card">
-            <div class="card-header"><h2>Tasks</h2><span class="link" onclick="showPage('tasks')">View all</span></div>
-            <div id="life-dashboard-tasks"><div class="life-dashboard-empty">Loading tasks...</div></div>
+        </section>
+
+        <!-- Week ahead -->
+        <section class="life-card dashboard-week-card">
+          <div class="card-header">
+            <div>
+              <h2>Week ahead</h2>
+              <div class="dash-card-subtitle">Your next important events, holidays and task deadlines</div>
+            </div>
+            <div class="dash-header-links">
+              <span class="link" onclick="showPage('calendar')">Calendar</span>
+              <span class="link" onclick="showPage('tasks')">Tasks</span>
+            </div>
           </div>
-          <div class="life-card">
-            <div class="card-header"><h2>Money</h2><span class="link" onclick="showPage('money')">Open finances</span></div>
-            <div class="money-row"><span>Financial tracker</span><span class="amount positive">Full tracker integrated</span></div>
-            <div class="money-row"><span>Salary base</span><span class="amount">SAR 19,200</span></div>
-            <div class="money-row"><span>Salary with OT</span><span class="amount">SAR 20,800</span></div>
-            <div class="money-row"><span>Live exchange rate</span><span class="amount" id="life-money-fx">Loading...</span></div>
+          <div id="dash-week-timeline" class="dash-week-timeline">
+            <div class="life-dashboard-empty">Loading your week...</div>
           </div>
+        </section>
+
+        <section class="grid dashboard-secondary-grid">
+          <!-- Financial position -->
+          <div class="life-card dashboard-finance-card">
+            <div class="card-header">
+              <div>
+                <h2>Money this month</h2>
+                <div class="dash-card-subtitle" id="dash-finance-month-label">Current month</div>
+              </div>
+              <span class="link" onclick="showPage('money')">Open finances</span>
+            </div>
+            <div class="dash-finance-grid">
+              <div class="dash-finance-metric">
+                <span>Required</span>
+                <strong id="dash-month-required">SAR 0.00</strong>
+              </div>
+              <div class="dash-finance-metric">
+                <span>Paid</span>
+                <strong class="positive" id="dash-month-paid">SAR 0.00</strong>
+              </div>
+              <div class="dash-finance-metric">
+                <span>Pending</span>
+                <strong id="dash-month-pending">SAR 0.00</strong>
+              </div>
+              <div class="dash-finance-metric">
+                <span>Remaining vs base salary</span>
+                <strong id="dash-month-base-left">SAR 0.00</strong>
+              </div>
+            </div>
+            <div class="dash-finance-footer">
+              <span id="dash-next-month-summary">Next month: loading...</span>
+              <span id="dash-salary-summary">Base salary: loading...</span>
+            </div>
+          </div>
+
+          <!-- Markets -->
+          <div class="life-card dashboard-market-card">
+            <div class="card-header">
+              <div>
+                <h2>Markets</h2>
+                <div class="dash-card-subtitle">Rates you use regularly</div>
+              </div>
+              <span class="link" onclick="showPage('currency')">Currency & gold</span>
+            </div>
+            <div class="dash-market-grid">
+              <div class="dash-market-item">
+                <span>SAR → EGP</span>
+                <strong id="life-money-fx">Loading...</strong>
+                <small id="dash-fx-source">Live rate</small>
+              </div>
+              <div class="dash-market-item">
+                <span>Gold 24K · Saudi</span>
+                <strong id="dash-gold-24">Loading...</strong>
+                <small>per gram</small>
+              </div>
+              <div class="dash-market-item">
+                <span>Gold 21K · Saudi</span>
+                <strong id="dash-gold-21">Loading...</strong>
+                <small>per gram</small>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="grid dashboard-bottom-grid">
+          <!-- Planning / leave -->
           <div class="life-card">
-            <div class="card-header"><h2>Quick access</h2></div>
-            <div class="quick">
-              <button onclick="showPage('money');setTimeout(openAddExpenseModal,50)">＋ Expense<small>Record a transaction</small></button>
-              <button onclick="showPage('tasks')">＋ Task<small>Manage tasks</small></button>
-              <button onclick="showPage('calendar')">＋ Event<small>Open calendar</small></button>
-              <button onclick="showPage('notes')">＋ Note<small>Capture an idea</small></button>
+            <div class="card-header">
+              <div>
+                <h2>Planning snapshot</h2>
+                <div class="dash-card-subtitle">Useful things to keep an eye on</div>
+              </div>
+            </div>
+            <div class="dash-planning-list">
+              <div class="dash-planning-row">
+                <span>Next calendar item</span>
+                <strong id="dash-next-event">Nothing upcoming</strong>
+              </div>
+              <div class="dash-planning-row">
+                <span>Open tasks due this week</span>
+                <strong id="dash-week-task-count">0</strong>
+              </div>
+              <div class="dash-planning-row">
+                <span>Overdue tasks</span>
+                <strong id="dash-overdue-count">0</strong>
+              </div>
+              <div class="dash-planning-row">
+                <span>Next month planned expenses</span>
+                <strong id="dash-next-month-required">SAR 0.00</strong>
+              </div>
+            </div>
+          </div>
+
+          <!-- Quick actions -->
+          <div class="life-card">
+            <div class="card-header">
+              <div>
+                <h2>Quick actions</h2>
+                <div class="dash-card-subtitle">Go straight to what you use most</div>
+              </div>
+            </div>
+            <div class="quick dash-quick-actions">
+              <button onclick="showPage('money');setTimeout(openAddExpenseModal,50)">＋ Expense<small>Record spending</small></button>
+              <button onclick="showPage('tasks');setTimeout(()=>lifeTasksOpenModal&&lifeTasksOpenModal(),80)">＋ Task<small>Add a to-do</small></button>
+              <button onclick="showPage('calendar');setTimeout(()=>openLifeEventModal&&openLifeEventModal(),80)">＋ Event<small>Add to calendar</small></button>
+              <button onclick="showPage('currency')">↻ Rates<small>Currency & gold</small></button>
             </div>
           </div>
         </section>
       </div>
     </section>
-
     
 <section id="page-calendar" class="life-page">
   <div class="life-calendar-page">
@@ -9995,51 +10238,58 @@ document.addEventListener('DOMContentLoaded',()=>{
   function formatShort(key){const [y,m,d]=key.split('-').map(Number);return new Date(y,m-1,d,12).toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'});}
 
   window.lifeOSRefreshDashboard=function(){
-    // Tasks
     let tasks=[];
     try{const x=JSON.parse(localStorage.getItem(TASK_KEY)||'[]');if(Array.isArray(x))tasks=x;}catch(e){}
+
     const today=todayKey();
+    const weekEnd=addDays(today,6);
     const todayTasks=tasks.filter(t=>t.due===today);
+    const openToday=todayTasks.filter(t=>!t.done);
     const done=todayTasks.filter(t=>t.done).length;
+    const overdue=tasks.filter(t=>!t.done && t.due && t.due<today);
+    const weekTasks=tasks.filter(t=>!t.done && t.due && t.due>=today && t.due<=weekEnd);
+
     const stat=document.getElementById('life-task-stat');
     const note=document.getElementById('life-task-note');
     if(stat)stat.textContent=`${done} / ${todayTasks.length}`;
-    if(note)note.textContent=todayTasks.length?`${Math.round(done/todayTasks.length*100)}% completed`:'No tasks scheduled today';
+    if(note)note.textContent=todayTasks.length
+      ? `${openToday.length} still open today`
+      : 'No tasks scheduled today';
+
+    const overdueEl=document.getElementById('dash-overdue-count');
+    if(overdueEl){
+      overdueEl.textContent=overdue.length;
+      overdueEl.className=overdue.length?'negative-value':'positive-value';
+    }
+    const weekTaskEl=document.getElementById('dash-week-task-count');
+    if(weekTaskEl)weekTaskEl.textContent=weekTasks.length;
 
     const taskBox=document.getElementById('life-dashboard-tasks');
     if(taskBox){
-      const list=todayTasks.slice().sort((a,b)=>(a.time||'99:99').localeCompare(b.time||'99:99')).slice(0,5);
-      taskBox.innerHTML=list.length?list.map(t=>`<label class="task ${t.done?'done':''}"><input type="checkbox" ${t.done?'checked':''} onchange="lifeTasksToggle('${esc(t.id)}');setTimeout(lifeOSRefreshDashboard,50)"><span>${esc(t.time?t.time+' · ':'')}${esc(t.title)}</span></label>`).join(''):'<div class="life-dashboard-empty">No tasks scheduled for today.</div>';
+      const list=openToday.slice().sort((a,b)=>(a.time||'99:99').localeCompare(b.time||'99:99')).slice(0,5);
+      taskBox.innerHTML=list.length
+        ? list.map(t=>`<label class="task"><input type="checkbox" onchange="lifeTasksToggle('${esc(t.id)}');setTimeout(lifeOSRefreshDashboard,50)"><span>${esc(t.time?t.time+' · ':'')}${esc(t.title)}</span></label>`).join('')
+        : (todayTasks.length ? '<div class="life-dashboard-empty">All of today’s tasks are complete.</div>' : '<div class="life-dashboard-empty">No tasks scheduled for today.</div>');
     }
 
-    // Calendar: "Today" card shows TODAY ONLY.
-    // Upcoming KPI remains next 7 days. Recurring events are expanded through the calendar engine.
+    // Calendar occurrences + holidays for today and the coming week.
     let upcoming=[], todayRows=[];
-    const end=addDays(today,7);
-
     try{
       if(typeof lifeCalEventsForRange==='function'){
-        const occ=lifeCalEventsForRange(today,end);
+        const occ=lifeCalEventsForRange(today,weekEnd);
         occ.forEach(e=>{
-          const row={
-            date:e.occurrenceDate||e.date,
-            time:e.start||'',
-            title:e.title||'Event',
-            sub:e.location||e.description||'Calendar event',
-            kind:'event'
-          };
+          const row={date:e.occurrenceDate||e.date,time:e.start||'',title:e.title||'Event',sub:e.location||e.description||'Calendar event',kind:'event'};
           upcoming.push(row);
-          if(row.date===today) todayRows.push(row);
+          if(row.date===today)todayRows.push(row);
         });
-      } else {
-        // Safe fallback if calendar code has not initialized yet.
+      }else{
         let events=[];
         try{const x=JSON.parse(localStorage.getItem(CAL_KEY)||'[]');if(Array.isArray(x))events=x;}catch(e){}
         events.forEach(e=>{
-          if(e.date>=today&&e.date<=end){
+          if(e.date>=today&&e.date<=weekEnd){
             const row={date:e.date,time:e.start||'',title:e.title||'Event',sub:e.location||e.description||'Calendar event',kind:'event'};
             upcoming.push(row);
-            if(row.date===today) todayRows.push(row);
+            if(row.date===today)todayRows.push(row);
           }
         });
       }
@@ -10047,50 +10297,160 @@ document.addEventListener('DOMContentLoaded',()=>{
       if(typeof lifeCalHolidayMap==='function'){
         const hm=lifeCalHolidayMap()||{};
         Object.keys(hm).forEach(k=>{
-          if(k>=today&&k<=end){
+          if(k>=today&&k<=weekEnd){
             (hm[k]||[]).forEach(h=>{
               const row={date:k,time:'',title:h.title,sub:h.country==='eg'?'Egypt public holiday':'Saudi public holiday',kind:'holiday'};
               upcoming.push(row);
-              if(k===today) todayRows.push(row);
+              if(k===today)todayRows.push(row);
             });
           }
         });
       }
-    }catch(e){ console.warn('Dashboard calendar refresh failed',e); }
+    }catch(e){console.warn('Dashboard calendar refresh failed',e);}
 
-    const unique = rows => {
+    const unique=rows=>{
       const seen=new Set();
       return rows.filter(r=>{
         const k=[r.date,r.time,r.title,r.kind].join('|');
-        if(seen.has(k)) return false;
-        seen.add(k); return true;
+        if(seen.has(k))return false;
+        seen.add(k);return true;
       });
     };
-    upcoming=unique(upcoming).sort((a,b)=>(a.date+a.time).localeCompare(b.date+b.time));
+    upcoming=unique(upcoming).sort((a,b)=>(a.date+(a.time||'99:99')).localeCompare(b.date+(b.time||'99:99')));
     todayRows=unique(todayRows).sort((a,b)=>(a.time||'99:99').localeCompare(b.time||'99:99'));
-
-    const count=document.getElementById('life-upcoming-count');
-    if(count) count.textContent=upcoming.length;
 
     const eventBox=document.getElementById('life-dashboard-events');
     if(eventBox){
-      const list=todayRows.slice(0,6);
+      const list=todayRows.slice(0,5);
       eventBox.innerHTML=list.length
         ? list.map(e=>`<div class="event"><div class="time">${e.time?esc(formatTime(e.time)):'All day'}</div><div class="dot ${e.kind==='holiday'?'holiday-dot':''}"></div><div class="event-main"><div class="event-title">${esc(e.title)}</div><div class="event-sub">${esc(e.sub)}</div></div></div>`).join('')
         : '<div class="life-dashboard-empty">Nothing scheduled for today.</div>';
     }
 
-    const dashDate=document.getElementById('life-dashboard-date');
-    if(dashDate){
-      const now=new Date();
-      dashDate.textContent=now.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'})+' · Riyadh';
+    const nextEvent=document.getElementById('dash-next-event');
+    if(nextEvent){
+      const n=upcoming[0];
+      nextEvent.textContent=n ? `${formatShort(n.date)}${n.time?' · '+formatTime(n.time):''} · ${n.title}` : 'Nothing in the next 7 days';
     }
 
-    // Money
-    const money=document.getElementById('kpi-total-expenses'), moneyDst=document.getElementById('life-money-total');
-    if(money&&moneyDst)moneyDst.textContent=money.textContent;
+    // Combined week timeline: calendar + holidays + open task deadlines.
+    const weekMap={};
+    for(let i=0;i<7;i++)weekMap[addDays(today,i)]=[];
+    upcoming.forEach(e=>{
+      if(weekMap[e.date])weekMap[e.date].push({type:e.kind,title:e.title,time:e.time||''});
+    });
+    weekTasks.forEach(t=>{
+      if(weekMap[t.due])weekMap[t.due].push({type:'task',title:t.title||'Task',time:t.time||''});
+    });
+
+    const timeline=document.getElementById('dash-week-timeline');
+    if(timeline){
+      timeline.innerHTML=Object.keys(weekMap).map(k=>{
+        const [y,m,d]=k.split('-').map(Number);
+        const dt=new Date(y,m-1,d,12);
+        const items=weekMap[k].sort((a,b)=>(a.time||'99:99').localeCompare(b.time||'99:99'));
+        const body=items.length
+          ? items.slice(0,4).map(i=>`<div class="dash-week-item ${i.type==='task'?'task-item':i.type==='holiday'?'holiday-item':''}" title="${esc(i.title)}">${i.time?esc(i.time)+' ':''}${esc(i.title)}</div>`).join('')+(items.length>4?`<div class="dash-week-empty">+${items.length-4} more</div>`:'')
+          : '<div class="dash-week-empty">Clear</div>';
+        return `<div class="dash-week-day ${k===today?'today':''}"><div class="dash-week-day-head"><strong>${dt.toLocaleDateString('en-US',{weekday:'short'})}</strong><span>${dt.getDate()}</span></div>${body}</div>`;
+      }).join('');
+    }
+
+    const combinedUpcoming=upcoming.length+weekTasks.length;
+    const count=document.getElementById('life-upcoming-count');
+    if(count)count.textContent=combinedUpcoming;
+    const upcomingNote=document.getElementById('dash-upcoming-note');
+    if(upcomingNote)upcomingNote.textContent=`${upcoming.length} calendar · ${weekTasks.length} task deadlines`;
+
+    const attentionCount=overdue.length+openToday.length;
+    const attention=document.getElementById('dash-attention-count');
+    const attentionNote=document.getElementById('dash-attention-note');
+    if(attention)attention.textContent=attentionCount;
+    if(attentionNote){
+      attentionNote.textContent=attentionCount
+        ? `${overdue.length} overdue · ${openToday.length} due today`
+        : 'Nothing urgent';
+    }
+
+    const dayStatus=document.getElementById('dash-day-status');
+    if(dayStatus){
+      if(overdue.length){dayStatus.textContent='Needs attention';dayStatus.className='dash-status-pill urgent';}
+      else if(openToday.length || todayRows.length){dayStatus.textContent='Active day';dayStatus.className='dash-status-pill attention';}
+      else{dayStatus.textContent='Clear day';dayStatus.className='dash-status-pill';}
+    }
+
+    // Dynamic date + greeting
+    const now=new Date();
+    const dashDate=document.getElementById('life-dashboard-date');
+    if(dashDate)dashDate.textContent=now.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'})+' · Riyadh';
+    const greeting=document.getElementById('life-dashboard-greeting');
+    if(greeting){
+      const h=now.getHours();
+      greeting.textContent=(h<12?'Good morning':h<18?'Good afternoon':'Good evening')+', Ahmed';
+    }
+
+    // Current and next month financial snapshot from the tracker itself.
+    try{
+      if(typeof appData!=='undefined' && appData && Array.isArray(appData.months) && Array.isArray(appData.items)){
+        const monthKey=`${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`;
+        let idx=appData.months.findIndex(m=>String(m.key||'').slice(0,7)===monthKey);
+        if(idx<0) idx=0;
+
+        const calcMonth=(mi)=>{
+          const its=appData.items.filter(i=>Number(i.monthIndex)===mi);
+          const required=its.reduce((s,i)=>s+(Number(i.amountSAR)||0),0);
+          let paid=0;
+          its.forEach(i=>{
+            const amt=Number(i.amountSAR)||0;
+            const p=Number(i.paidAmountSAR)||0;
+            if(i.status==='Paid')paid+=amt;
+            else if(i.status==='Partially Paid'||p>0)paid+=Math.min(p,amt);
+          });
+          return {required,paid,pending:Math.max(0,required-paid)};
+        };
+
+        const cur=calcMonth(idx);
+        const next=idx+1<appData.months.length?calcMonth(idx+1):null;
+        const base=Number(appData.salaryBase)||0;
+        const remaining=base-cur.required;
+        const fmt=n=>'SAR '+Number(n||0).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2});
+
+        const set=(id,val)=>{const e=document.getElementById(id);if(e)e.textContent=val;};
+        set('dash-finance-month-label',appData.months[idx]?.label||'Current month');
+        set('dash-month-required',fmt(cur.required));
+        set('dash-month-paid',fmt(cur.paid));
+        set('dash-month-pending',fmt(cur.pending));
+        set('dash-month-base-left',fmt(remaining));
+        set('dash-month-remaining',fmt(remaining));
+        set('dash-month-remaining-note',remaining>=0?'Available after planned expenses':'Planned expenses exceed base salary');
+        set('dash-salary-summary','Base salary: '+fmt(base));
+
+        const remEls=[document.getElementById('dash-month-base-left'),document.getElementById('dash-month-remaining')];
+        remEls.forEach(e=>{if(e)e.className=remaining<0?'negative-value':'positive-value';});
+
+        if(next){
+          const nextLabel=appData.months[idx+1]?.label||'Next month';
+          set('dash-next-month-summary',`${nextLabel}: ${fmt(next.required)} planned`);
+          set('dash-next-month-required',fmt(next.required));
+        }else{
+          set('dash-next-month-summary','No next month in tracker');
+          set('dash-next-month-required','—');
+        }
+      }
+    }catch(e){console.warn('Dashboard finance snapshot failed',e);}
+
+    // Markets
     const fxMoney=document.getElementById('life-money-fx');
-    if(fxMoney)fxMoney.textContent=`1 SAR = ${fx.SAR_EGP.toFixed(4)} EGP`;
+    if(fxMoney)fxMoney.textContent=`${fx.SAR_EGP.toFixed(4)} EGP`;
+    const fxSource=document.getElementById('dash-fx-source');
+    if(fxSource)fxSource.textContent='1 SAR · '+(fxUpdated?'updated '+fxUpdated.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}):'live rate');
+
+    try{
+      const sa=window.lifeGold?.countries?.SA?.values||{};
+      const fmtGold=v=>Number.isFinite(Number(v))?Number(v).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2})+' SAR':'Loading...';
+      const g24=document.getElementById('dash-gold-24');if(g24)g24.textContent=fmtGold(sa[24]);
+      const g21=document.getElementById('dash-gold-21');if(g21)g21.textContent=fmtGold(sa[21]);
+    }catch(e){}
   };
 
   async function fetchFX(){
@@ -10254,6 +10614,17 @@ document.addEventListener('DOMContentLoaded',()=>{
     lifeFXCalculate();
   };
   function rate(from,to){
+    // Use the exact live pair shown in the cards whenever that direct pair
+    // exists. This keeps the calculator identical to the displayed quote.
+    if(from===to) return 1;
+    if(from==='SAR' && to==='EGP') return fx.SAR_EGP;
+    if(from==='EGP' && to==='SAR') return 1/fx.SAR_EGP;
+    if(from==='USD' && to==='SAR') return fx.USD_SAR;
+    if(from==='SAR' && to==='USD') return 1/fx.USD_SAR;
+    if(from==='USD' && to==='EGP') return fx.USD_EGP;
+    if(from==='EGP' && to==='USD') return 1/fx.USD_EGP;
+
+    // Fallback for any future currencies added later.
     const usd={USD:1,SAR:fx.USD_SAR,EGP:fx.USD_EGP};
     return usd[to]/usd[from];
   }
