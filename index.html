@@ -3686,6 +3686,42 @@ window.lifeExchangeTab=function(tab){
         <label class="task-field"><span>Priority</span><select id="task-priority"><option value="high">High</option><option value="medium" selected>Medium</option><option value="low">Low</option></select></label>
         <label class="task-field"><span>Project / Area</span><input id="task-project" list="task-project-options" placeholder="Work, Personal..."><datalist id="task-project-options"></datalist></label>
         <label class="task-field"><span>Tag</span><input id="task-tag" placeholder="Optional tag"></label>
+
+        <label class="task-field"><span>Recurring</span>
+          <select id="task-recurrence" onchange="lifeTasksRecurrenceUI()">
+            <option value="none">Does not repeat</option>
+            <option value="weekly">Weekly</option>
+            <option value="biweekly">Every 2 weeks</option>
+            <option value="monthly">Monthly · same date</option>
+            <option value="monthend">End of each month</option>
+            <option value="nthweekday">Specific weekday / week of month</option>
+          </select>
+        </label>
+
+        <div class="task-field task-field-full task-recurrence-custom" id="task-recurrence-custom" style="display:none">
+          <span>Monthly pattern</span>
+          <div class="task-recurrence-row">
+            <select id="task-recurrence-week">
+              <option value="1">1st</option>
+              <option value="2">2nd</option>
+              <option value="3">3rd</option>
+              <option value="4">4th</option>
+              <option value="5">5th</option>
+              <option value="-1">Last</option>
+            </select>
+            <select id="task-recurrence-weekday">
+              <option value="0">Sunday</option>
+              <option value="1">Monday</option>
+              <option value="2">Tuesday</option>
+              <option value="3">Wednesday</option>
+              <option value="4">Thursday</option>
+              <option value="5">Friday</option>
+              <option value="6">Saturday</option>
+            </select>
+          </div>
+          <small class="task-field-help">Example: 2nd Monday of every month. The next occurrence is created automatically when you complete the current task.</small>
+        </div>
+
         <label class="task-field task-field-full"><span>Notes</span><textarea id="task-notes" rows="4" placeholder="Add context, links or notes..."></textarea></label>
       </div>
       <div class="life-task-dialog-actions"><button class="tasks-btn" onclick="lifeTasksCloseModal()">Cancel</button><button class="tasks-btn tasks-primary" onclick="lifeTasksSave()">Save task</button></div>
@@ -9814,6 +9850,13 @@ document.addEventListener('DOMContentLoaded',()=>{
 .task-field{display:flex;flex-direction:column;gap:7px}.task-field-full{grid-column:1/-1}.task-field span{font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:.5px;color:var(--life-muted)}
 .task-field input,.task-field select,.task-field textarea{font:inherit;border:1px solid var(--life-border);background:var(--life-input);color:var(--life-text);border-radius:10px;padding:11px 12px;outline:0}.task-field textarea{resize:vertical}.task-field input:focus,.task-field select:focus,.task-field textarea:focus{border-color:#8b5cf6;box-shadow:0 0 0 3px rgba(139,92,246,.12)}
 .life-task-dialog-actions{padding:15px 22px;border-top:1px solid var(--life-border);display:flex;justify-content:flex-end;gap:9px}
+
+.task-recurrence-row{display:grid;grid-template-columns:160px 1fr;gap:10px}
+.task-field-help{font-size:10px;color:var(--life-muted);line-height:1.45;text-transform:none!important;letter-spacing:0!important;font-weight:500!important}
+.task-repeat-badge{display:inline-flex;align-items:center;gap:4px;padding:2px 7px;border-radius:999px;background:#eef2ff;color:#4f46e5;font-size:9px;font-weight:800}
+.life-shell.dark-mode .task-repeat-badge{background:#27224a;color:#c4b5fd}
+@media(max-width:720px){.task-recurrence-row{grid-template-columns:1fr}}
+
 .life-shell.dark-mode .task-tag{background:#312e81;color:#c4b5fd}.life-shell.dark-mode .task-priority.high{background:#4c1d1d;color:#fca5a5}.life-shell.dark-mode .task-priority.medium{background:#45300a;color:#fcd34d}.life-shell.dark-mode .task-priority.low{background:#123522;color:#86efac}.life-shell.dark-mode .task-view-icon.active{background:#2b1b55;border-color:#6d28d9}.life-shell.dark-mode .tasks-primary{box-shadow:0 7px 18px rgba(109,0,255,.28)}
 @media(max-width:1050px){.tasks-layout{grid-template-columns:1fr}.tasks-sidebar-card{display:none}.tasks-stats{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:720px){.life-tasks-page{padding:24px 15px}.tasks-topbar{flex-direction:column}.tasks-stats{grid-template-columns:1fr 1fr}.tasks-view-controls{width:100%;flex-wrap:wrap}.tasks-search{flex:1}.task-row{grid-template-columns:26px minmax(0,1fr) auto}.task-due{display:none}.task-actions{opacity:1}.task-board{grid-template-columns:1fr}.task-form-grid{grid-template-columns:1fr}.task-field-full{grid-column:auto}}
@@ -9849,6 +9892,96 @@ document.addEventListener('DOMContentLoaded',()=>{
     if(diff===-1)return 'Yesterday';
     return d.toLocaleDateString(undefined,{month:'short',day:'numeric'});
   }
+  function recurrenceLabel(t){
+    const r=t?.recurrence?.type||'none';
+    if(r==='weekly')return 'Weekly';
+    if(r==='biweekly')return 'Every 2 weeks';
+    if(r==='monthly')return 'Monthly';
+    if(r==='monthend')return 'Month end';
+    if(r==='nthweekday'){
+      const n=Number(t.recurrence.week||1), w=Number(t.recurrence.weekday||0);
+      const ord=n===-1?'Last':({1:'1st',2:'2nd',3:'3rd',4:'4th',5:'5th'}[n]||n+'th');
+      const day=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'][w]||'Day';
+      return `${ord} ${day}`;
+    }
+    return '';
+  }
+
+  function isoDate(d){
+    return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+  }
+
+  function daysInMonth(y,m){ return new Date(y,m+1,0).getDate(); }
+
+  function nthWeekdayOfMonth(y,m,weekday,nth){
+    if(Number(nth)===-1){
+      const last=new Date(y,m+1,0);
+      const diff=(last.getDay()-Number(weekday)+7)%7;
+      return new Date(y,m,last.getDate()-diff);
+    }
+    const first=new Date(y,m,1);
+    const offset=(Number(weekday)-first.getDay()+7)%7;
+    const day=1+offset+(Number(nth)-1)*7;
+    if(day>daysInMonth(y,m)){
+      // If a requested 5th weekday doesn't exist, use the last occurrence.
+      return nthWeekdayOfMonth(y,m,weekday,-1);
+    }
+    return new Date(y,m,day);
+  }
+
+  function nextRecurringDate(task){
+    const r=task?.recurrence?.type||'none';
+    if(r==='none' || !task.due)return '';
+    const d=parseDate(task.due);
+    if(!d || Number.isNaN(d.getTime()))return '';
+
+    if(r==='weekly'){ d.setDate(d.getDate()+7); return isoDate(d); }
+    if(r==='biweekly'){ d.setDate(d.getDate()+14); return isoDate(d); }
+
+    if(r==='monthly'){
+      const originalDay=d.getDate();
+      const y=d.getMonth()===11?d.getFullYear()+1:d.getFullYear();
+      const m=(d.getMonth()+1)%12;
+      return isoDate(new Date(y,m,Math.min(originalDay,daysInMonth(y,m))));
+    }
+
+    if(r==='monthend'){
+      const y=d.getMonth()===11?d.getFullYear()+1:d.getFullYear();
+      const m=(d.getMonth()+1)%12;
+      return isoDate(new Date(y,m+1,0));
+    }
+
+    if(r==='nthweekday'){
+      const y=d.getMonth()===11?d.getFullYear()+1:d.getFullYear();
+      const m=(d.getMonth()+1)%12;
+      return isoDate(nthWeekdayOfMonth(y,m,Number(task.recurrence.weekday||0),Number(task.recurrence.week||1)));
+    }
+    return '';
+  }
+
+  function createNextOccurrence(task){
+    if(!task || !task.recurrence || task.recurrence.type==='none' || !task.due)return null;
+    // Do not create duplicate successors if a completed task is toggled more than once.
+    const existing=tasks.find(x=>x.recurringParentId===task.id);
+    if(existing)return existing;
+
+    const nextDue=nextRecurringDate(task);
+    if(!nextDue)return null;
+
+    const next={
+      ...task,
+      id:'t'+Date.now()+Math.random().toString(36).slice(2,7),
+      due:nextDue,
+      done:false,
+      recurringParentId:task.id,
+      completedAt:null
+    };
+    delete next.nextGenerated;
+    tasks.push(next);
+    task.nextGenerated=true;
+    return next;
+  }
+
   function save(){localStorage.setItem(KEY,JSON.stringify(tasks))}
   function load(){
     try{const x=JSON.parse(localStorage.getItem(KEY)||'null'); tasks=Array.isArray(x)?x:seed.map(x=>({...x}));}
@@ -9902,7 +10035,7 @@ document.addEventListener('DOMContentLoaded',()=>{
       ${board?'':`<input class="task-check" type="checkbox" ${t.done?'checked':''} onclick="event.stopPropagation();lifeTasksToggle('${t.id}')">`}
       <div class="${board?'':'task-main'}" ${board?'':`onclick="lifeTasksEdit('${t.id}')"`}>
         <div class="task-title-line"><span class="task-title">${esc(t.title)}</span><span class="task-priority ${t.priority}">${t.priority}</span></div>
-        <div class="task-meta">${t.project?`<span class="task-project">${esc(t.project)}</span>`:''}${t.tag?`<span class="task-tag">#${esc(t.tag)}</span>`:''}${t.notes?`<span>• note</span>`:''}</div>
+        <div class="task-meta">${t.project?`<span class="task-project">${esc(t.project)}</span>`:''}${t.tag?`<span class="task-tag">#${esc(t.tag)}</span>`:''}${t.recurrence&&t.recurrence.type!=='none'?`<span class="task-repeat-badge">↻ ${esc(recurrenceLabel(t))}</span>`:''}${t.notes?`<span>• note</span>`:''}</div>
       </div>
       ${board?'':`<div class="task-due ${overdue?'overdue':''} ${t.due===today?'today':''}">${t.due?fmtDate(t.due)+(t.time?' · '+t.time:''):''}</div><div class="task-actions"><button class="task-action" onclick="event.stopPropagation();lifeTasksEdit('${t.id}')">✎</button><button class="task-action" onclick="event.stopPropagation();lifeTasksDelete('${t.id}')">×</button></div>`}
     </div>`
@@ -9964,20 +10097,67 @@ document.addEventListener('DOMContentLoaded',()=>{
     document.getElementById('task-priority').value=t?.priority||'medium';
     document.getElementById('task-project').value=t?.project||'';
     document.getElementById('task-tag').value=t?.tag||'';
+    document.getElementById('task-recurrence').value=t?.recurrence?.type||'none';
+    document.getElementById('task-recurrence-week').value=String(t?.recurrence?.week??1);
+    document.getElementById('task-recurrence-weekday').value=String(t?.recurrence?.weekday??new Date((t?.due||localToday())+'T00:00:00').getDay());
     document.getElementById('task-notes').value=t?.notes||'';
+    lifeTasksRecurrenceUI();
     modal.style.display='flex';setTimeout(()=>document.getElementById('task-title')?.focus(),50);
+  };
+  window.lifeTasksRecurrenceUI=function(){
+    const type=document.getElementById('task-recurrence')?.value||'none';
+    const custom=document.getElementById('task-recurrence-custom');
+    if(custom)custom.style.display=type==='nthweekday'?'flex':'none';
   };
   window.lifeTasksEdit=function(id){lifeTasksOpenModal(id)};
   window.lifeTasksCloseModal=function(){const m=document.getElementById('life-task-modal');if(m)m.style.display='none'};
   window.lifeTasksSave=function(){
     const title=document.getElementById('task-title').value.trim();if(!title){alert('Please enter a task title.');return}
     const id=document.getElementById('life-task-edit-id').value;
-    const data={title,due:document.getElementById('task-due').value,time:document.getElementById('task-time').value,priority:document.getElementById('task-priority').value,project:document.getElementById('task-project').value.trim(),tag:document.getElementById('task-tag').value.trim(),notes:document.getElementById('task-notes').value.trim()};
-    if(id){const t=tasks.find(x=>x.id===id);if(t)Object.assign(t,data)}else tasks.push({id:'t'+Date.now(),...data,done:false});
-    save();lifeTasksCloseModal();lifeTasksRender();
+    const recurrenceType=document.getElementById('task-recurrence').value||'none';
+    const recurrence={
+      type:recurrenceType,
+      week:Number(document.getElementById('task-recurrence-week').value||1),
+      weekday:Number(document.getElementById('task-recurrence-weekday').value||0)
+    };
+    const data={title,due:document.getElementById('task-due').value,time:document.getElementById('task-time').value,priority:document.getElementById('task-priority').value,project:document.getElementById('task-project').value.trim(),tag:document.getElementById('task-tag').value.trim(),notes:document.getElementById('task-notes').value.trim(),recurrence};
+    if(id){
+      const t=tasks.find(x=>x.id===id);
+      if(t){
+        Object.assign(t,data);
+        // If the recurrence definition changes, allow a future successor to be generated.
+        if(!tasks.some(x=>x.recurringParentId===t.id))delete t.nextGenerated;
+      }
+    }else tasks.push({id:'t'+Date.now(),...data,done:false});
+    save();
+    setTimeout(()=>{try{if(typeof window.lifeOSSaveModuleNow==='function')window.lifeOSSaveModuleNow('tasks');}catch(e){}},50);
+    lifeTasksCloseModal();lifeTasksRender();
   };
-  window.lifeTasksToggle=function(id){const t=tasks.find(x=>x.id===id);if(t){t.done=!t.done;save();lifeTasksRender()}};
-  window.lifeTasksDelete=function(id){const t=tasks.find(x=>x.id===id);if(t&&confirm('Delete “'+t.title+'”?')){tasks=tasks.filter(x=>x.id!==id);save();lifeTasksRender()}};
+  window.lifeTasksToggle=function(id){
+    const t=tasks.find(x=>x.id===id);
+    if(!t)return;
+    const wasDone=!!t.done;
+    t.done=!t.done;
+    if(t.done && !wasDone){
+      t.completedAt=new Date().toISOString();
+      createNextOccurrence(t);
+    }else if(!t.done){
+      t.completedAt=null;
+    }
+    save();
+    setTimeout(()=>{try{if(typeof window.lifeOSSaveModuleNow==='function')window.lifeOSSaveModuleNow('tasks');}catch(e){}},50);
+    lifeTasksRender();
+    if(typeof window.lifeOSRefreshDashboard==='function')setTimeout(window.lifeOSRefreshDashboard,50);
+  };
+  window.lifeTasksDelete=function(id){
+    const t=tasks.find(x=>x.id===id);
+    if(t&&confirm('Delete “'+t.title+'”?')){
+      tasks=tasks.filter(x=>x.id!==id);
+      save();
+      setTimeout(()=>{try{if(typeof window.lifeOSSaveModuleNow==='function')window.lifeOSSaveModuleNow('tasks');}catch(e){}},50);
+      lifeTasksRender();
+    }
+  };
   window.lifeTasksInit=function(){load();lifeTasksRender()};
 
   document.addEventListener('DOMContentLoaded',function(){
