@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>LifeOS</title>
+<title>GLife</title>
 <style>
 
     :root {
@@ -1237,6 +1237,44 @@
   }
 }
 
+
+
+/* v59: clean sidebar header layout + GLife brand */
+@media(min-width:701px){
+  .life-shell:not(.sidebar-collapsed) .life-sidebar-toggle{
+    left:16px !important;
+    top:16px !important;
+  }
+  .life-shell:not(.sidebar-collapsed) .life-theme-toggle{
+    left:64px !important;
+    top:16px !important;
+  }
+  .life-shell:not(.sidebar-collapsed) .life-sidebar .life-brand{
+    padding:68px 12px 24px !important;
+    min-height:0 !important;
+  }
+
+  /* In collapsed mode there is not enough width for two controls side-by-side. */
+  .life-shell.sidebar-collapsed .life-sidebar-toggle{
+    left:17px !important;
+    top:16px !important;
+  }
+  .life-shell.sidebar-collapsed .life-theme-toggle{
+    left:17px !important;
+    top:64px !important;
+  }
+  .life-shell.sidebar-collapsed .life-sidebar .life-brand{
+    padding:112px 0 22px !important;
+    font-size:0 !important;
+    text-align:center !important;
+  }
+  .life-shell.sidebar-collapsed .life-sidebar .life-brand:after{
+    content:"G" !important;
+    font-size:22px !important;
+    color:#38bdf8 !important;
+    font-weight:800 !important;
+  }
+}
 
 /* LifeOS Light / Dark mode */
 .life-theme-toggle{
@@ -3047,7 +3085,7 @@ window.lifeExchangeTab=function(tab){
   <button class="life-sidebar-toggle" id="life-sidebar-toggle" type="button" title="Toggle sidebar" aria-label="Toggle sidebar">☰</button>
   <button class="life-theme-toggle" id="life-theme-toggle" type="button" title="Switch to dark mode" aria-label="Switch theme">☾</button>
   <aside class="life-sidebar">
-    <div class="life-brand">Life<span>OS</span></div>
+    <div class="life-brand">G<span>Life</span></div>
     <nav class="life-nav">
       <a class="active" href="#dashboard" data-page="dashboard">⌂ <span>Dashboard</span></a>
       <a href="#calendar" data-page="calendar">▣ <span>Calendar</span></a>
@@ -3057,10 +3095,10 @@ window.lifeExchangeTab=function(tab){
       <a href="#finishing-apt" data-page="finishing-apt">🏠 <span>Finishing Apt.</span></a>
       <a href="#settings" data-page="settings">⚙ <span>Settings</span></a>
     </nav>
-    <div class="life-data-tools" aria-label="LifeOS data tools">
-      <button type="button" onclick="lifeOSBackupAll()" title="Backup all LifeOS data">💾 <span>Backup</span></button>
-      <button type="button" onclick="lifeOSRestoreAll()" title="Restore all LifeOS data">📥 <span>Restore</span></button>
-      <button type="button" onclick="lifeOSSaveAllNow()" title="Save all LifeOS data to Supabase now">☁ <span>Save now</span></button>
+    <div class="life-data-tools" aria-label="GLife data tools">
+      <button type="button" onclick="lifeOSBackupAll()" title="Backup all GLife data">💾 <span>Backup</span></button>
+      <button type="button" onclick="lifeOSRestoreAll()" title="Restore all GLife data">📥 <span>Restore</span></button>
+      <button type="button" onclick="lifeOSSaveAllNow()" title="Save all GLife data to Supabase now">☁ <span>Save now</span></button>
     </div>
   </aside>
 
@@ -3530,7 +3568,7 @@ window.lifeExchangeTab=function(tab){
       <div class="life-modal-head">
         <div>
           <h2 id="life-event-modal-title">New event</h2>
-          <p>Add an event to your LifeOS calendar.</p>
+          <p>Add an event to your GLife calendar.</p>
         </div>
         <button class="modal-close-btn" onclick="closeLifeEventModal()">×</button>
       </div>
@@ -6586,12 +6624,12 @@ window.addEventListener('DOMContentLoaded', async () => {
                 <strong id="fx-result">1,369.36 EGP</strong>
                 <small id="fx-result-rate">Rate: 1 SAR = 13.693600 EGP</small>
               </div>
-              <div class="fx-note">Rates refresh automatically while LifeOS is open. Google Finance links above are provided for reference.</div>
+              <div class="fx-note">Rates refresh automatically while GLife is open. Google Finance links above are provided for reference.</div>
             </div>
 
             <div class="currency-panel currency-source-panel">
               <h2>Rate Source</h2>
-              <p>LifeOS reads the current SAR/EGP, USD/SAR and USD/EGP quotes from Google Finance through the Supabase market function.</p>
+              <p>GLife reads the current SAR/EGP, USD/SAR and USD/EGP quotes from Google Finance through the Supabase market function.</p>
               <div class="fx-source-status">
                 <span class="fx-status-dot"></span>
                 <strong id="fx-source-name">Google Finance</strong>
@@ -6669,7 +6707,7 @@ window.addEventListener('DOMContentLoaded', async () => {
             </div>
           </div>
 
-          <div class="fx-note">The preferred source is a live country-specific gold feed. If that source is temporarily unavailable from the browser, LifeOS falls back to global XAU spot converted using the live FX rates, so the page continues updating.</div>
+          <div class="fx-note">The preferred source is a live country-specific gold feed. If that source is temporarily unavailable from the browser, GLife falls back to global XAU spot converted using the live FX rates, so the page continues updating.</div>
         </div>
       </div>
     </section>
@@ -6691,7 +6729,7 @@ window.addEventListener('DOMContentLoaded', async () => {
 
     <section id="page-settings" class="life-page">
       <div class="life-settings-page">
-        <div class="life-settings-head"><div><h1>Settings</h1><p>Manage your LifeOS data, backups and cloud storage.</p></div></div>
+        <div class="life-settings-head"><div><h1>Settings</h1><p>Manage your GLife data, backups and cloud storage.</p></div></div>
         <div class="life-settings-grid">
           <div class="life-settings-card life-settings-data-card">
             <div class="life-settings-card-icon">💾</div>
@@ -11049,8 +11087,8 @@ document.addEventListener('DOMContentLoaded',()=>{
   window.lifeOSBackupAll=function(){
     try{
       const stamp=new Date().toISOString().slice(0,10);
-      download(allData(),'LifeOS_Backup_'+stamp+'.json');
-      if(typeof showToast==='function')showToast('💾 Full LifeOS backup exported');
+      download(allData(),'GLife_Backup_'+stamp+'.json');
+      if(typeof showToast==='function')showToast('💾 Full GLife backup exported');
       setStatus('Backup exported successfully.');
     }catch(e){alert('Backup failed: '+e.message)}
   };
@@ -11064,8 +11102,8 @@ document.addEventListener('DOMContentLoaded',()=>{
     reader.onload=async function(e){
       try{
         const parsed=JSON.parse(e.target.result);
-        if(!parsed||parsed.format!=='LifeOS Backup'||!parsed.modules)throw new Error('This is not a valid LifeOS backup file.');
-        if(!confirm('Restore this LifeOS backup? Current local data will be replaced.'))return;
+        if(!parsed||parsed.format!=='LifeOS Backup'||!parsed.modules)throw new Error('This is not a valid GLife backup file.');
+        if(!confirm('Restore this GLife backup? Current local data will be replaced.'))return;
         Object.entries(KEYS).forEach(([name,key])=>{
           if(Object.prototype.hasOwnProperty.call(parsed.modules,name)){
             if(parsed.modules[name]===null)localStorage.removeItem(key);
@@ -11082,7 +11120,7 @@ document.addEventListener('DOMContentLoaded',()=>{
         if(typeof lifeVacationRender==='function')lifeVacationRender();
         if(typeof renderAll==='function')renderAll();
         if(typeof window.lifeOSCloudSyncNow==='function')await window.lifeOSCloudSyncNow();
-        if(typeof showToast==='function')showToast('📥 Full LifeOS backup restored');
+        if(typeof showToast==='function')showToast('📥 Full GLife backup restored');
         setStatus('Backup restored and synced to cloud.');
       }catch(err){alert('Failed to restore backup: '+err.message);setStatus('Restore failed.')}
     };
@@ -11095,7 +11133,7 @@ document.addEventListener('DOMContentLoaded',()=>{
         if(typeof persistAppDataToCloud==='function')await persistAppDataToCloud();
       }
       if(typeof window.lifeOSCloudSyncNow==='function')await window.lifeOSCloudSyncNow();
-      if(typeof showToast==='function')showToast('☁️ All LifeOS data saved');
+      if(typeof showToast==='function')showToast('☁️ All GLife data saved');
       setStatus('All data saved to Supabase cloud.');
     }catch(e){showToast&&showToast('⚠️ Cloud save failed');setStatus('Cloud save failed. Local data is still kept.')}
   };
