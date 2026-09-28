@@ -2986,7 +2986,7 @@ window.lifeExchangeTab=function(tab){
     <section id="page-dashboard" class="life-page active">
       <div class="life-dashboard">
         <div class="life-topbar">
-          <div><h1>Good morning, Ahmed</h1><p class="muted">Saturday, September 12, 2026 · Riyadh</p></div>
+          <div><h1>Good morning, Ahmed</h1><p class="muted" id="life-dashboard-date">Loading date...</p></div>
           <div class="top-actions"><button onclick="alert('Global search coming next')">⌕ Search</button><button class="primary" onclick="showPage('money'); setTimeout(openAddExpenseModal, 50)">＋ Add Expense</button></div>
         </div>
         <section class="grid stats">
@@ -6338,11 +6338,11 @@ window.addEventListener('DOMContentLoaded', async () => {
 
             <div class="currency-panel currency-source-panel">
               <h2>Rate Source</h2>
-              <p>LifeOS uses a live FX feed and derives the SAR/EGP cross-rate from USD rates.</p>
+              <p>LifeOS reads the current SAR/EGP, USD/SAR and USD/EGP quotes from Google Finance through the Supabase market function.</p>
               <div class="fx-source-status">
                 <span class="fx-status-dot"></span>
-                <strong id="fx-source-name">Live FX feed</strong>
-                <div class="fx-source-note">Automatic refresh every 30 minutes, plus manual refresh.</div>
+                <strong id="fx-source-name">Google Finance</strong>
+                <div class="fx-source-note">Google Finance · automatic refresh every 30 minutes, plus manual refresh.</div>
               </div>
             </div>
           </div>
@@ -10012,35 +10012,78 @@ document.addEventListener('DOMContentLoaded',()=>{
       taskBox.innerHTML=list.length?list.map(t=>`<label class="task ${t.done?'done':''}"><input type="checkbox" ${t.done?'checked':''} onchange="lifeTasksToggle('${esc(t.id)}');setTimeout(lifeOSRefreshDashboard,50)"><span>${esc(t.time?t.time+' · ':'')}${esc(t.title)}</span></label>`).join(''):'<div class="life-dashboard-empty">No tasks scheduled for today.</div>';
     }
 
-    // Calendar events + enabled public holidays
-    let events=[];try{const x=JSON.parse(localStorage.getItem(CAL_KEY)||'[]');if(Array.isArray(x))events=x;}catch(e){}
+    // Calendar: "Today" card shows TODAY ONLY.
+    // Upcoming KPI remains next 7 days. Recurring events are expanded through the calendar engine.
+    let upcoming=[], todayRows=[];
     const end=addDays(today,7);
-    const upcoming=[];
-    events.forEach(e=>{if(e.date>=today&&e.date<=end)upcoming.push({date:e.date,time:e.start||'',title:e.title||'Event',sub:e.location||e.description||'Calendar event',kind:'event'});});
-    const holidaySets=[
-      ...(Array.isArray(window.LIFE_EGYPT_HOLIDAYS_2026)?window.LIFE_EGYPT_HOLIDAYS_2026:[]),
-      ...(Array.isArray(window.LIFE_SAUDI_HOLIDAYS_2026)?window.LIFE_SAUDI_HOLIDAYS_2026:[])
-    ];
-    // Constants are lexical in the calendar script, so also safely inspect known 2026 arrays.
-    let holidayRows=[];
+
     try{
-      const eg=typeof LIFE_EGYPT_HOLIDAYS_2026!=='undefined'?LIFE_EGYPT_HOLIDAYS_2026:[];
-      const sa=typeof LIFE_SAUDI_HOLIDAYS_2026!=='undefined'?LIFE_SAUDI_HOLIDAYS_2026:[];
-      holidayRows=[...eg,...sa];
-    }catch(e){}
-    const seenHoliday=new Set();
-    holidayRows.forEach(h=>{
-      if(h[0]>=today&&h[0]<=end){
-        const k=h[0]+'|'+h[1]+'|'+h[2];
-        if(!seenHoliday.has(k)){seenHoliday.add(k);upcoming.push({date:h[0],time:'',title:h[1],sub:h[2]==='eg'?'Egypt public holiday':'Saudi public holiday',kind:'holiday'});}
+      if(typeof lifeCalEventsForRange==='function'){
+        const occ=lifeCalEventsForRange(today,end);
+        occ.forEach(e=>{
+          const row={
+            date:e.occurrenceDate||e.date,
+            time:e.start||'',
+            title:e.title||'Event',
+            sub:e.location||e.description||'Calendar event',
+            kind:'event'
+          };
+          upcoming.push(row);
+          if(row.date===today) todayRows.push(row);
+        });
+      } else {
+        // Safe fallback if calendar code has not initialized yet.
+        let events=[];
+        try{const x=JSON.parse(localStorage.getItem(CAL_KEY)||'[]');if(Array.isArray(x))events=x;}catch(e){}
+        events.forEach(e=>{
+          if(e.date>=today&&e.date<=end){
+            const row={date:e.date,time:e.start||'',title:e.title||'Event',sub:e.location||e.description||'Calendar event',kind:'event'};
+            upcoming.push(row);
+            if(row.date===today) todayRows.push(row);
+          }
+        });
       }
-    });
-    upcoming.sort((a,b)=>(a.date+a.time).localeCompare(b.date+b.time));
-    const count=document.getElementById('life-upcoming-count');if(count)count.textContent=upcoming.length;
+
+      if(typeof lifeCalHolidayMap==='function'){
+        const hm=lifeCalHolidayMap()||{};
+        Object.keys(hm).forEach(k=>{
+          if(k>=today&&k<=end){
+            (hm[k]||[]).forEach(h=>{
+              const row={date:k,time:'',title:h.title,sub:h.country==='eg'?'Egypt public holiday':'Saudi public holiday',kind:'holiday'};
+              upcoming.push(row);
+              if(k===today) todayRows.push(row);
+            });
+          }
+        });
+      }
+    }catch(e){ console.warn('Dashboard calendar refresh failed',e); }
+
+    const unique = rows => {
+      const seen=new Set();
+      return rows.filter(r=>{
+        const k=[r.date,r.time,r.title,r.kind].join('|');
+        if(seen.has(k)) return false;
+        seen.add(k); return true;
+      });
+    };
+    upcoming=unique(upcoming).sort((a,b)=>(a.date+a.time).localeCompare(b.date+b.time));
+    todayRows=unique(todayRows).sort((a,b)=>(a.time||'99:99').localeCompare(b.time||'99:99'));
+
+    const count=document.getElementById('life-upcoming-count');
+    if(count) count.textContent=upcoming.length;
+
     const eventBox=document.getElementById('life-dashboard-events');
     if(eventBox){
-      const list=upcoming.slice(0,6);
-      eventBox.innerHTML=list.length?list.map(e=>`<div class="event"><div class="time">${e.time?esc(formatTime(e.time)):esc(formatShort(e.date))}</div><div class="dot ${e.kind==='holiday'?'holiday-dot':''}"></div><div class="event-main"><div class="event-title">${esc(e.title)}</div><div class="event-sub">${esc(e.sub)}</div></div></div>`).join(''):'<div class="life-dashboard-empty">No events or holidays in the next 7 days.</div>';
+      const list=todayRows.slice(0,6);
+      eventBox.innerHTML=list.length
+        ? list.map(e=>`<div class="event"><div class="time">${e.time?esc(formatTime(e.time)):'All day'}</div><div class="dot ${e.kind==='holiday'?'holiday-dot':''}"></div><div class="event-main"><div class="event-title">${esc(e.title)}</div><div class="event-sub">${esc(e.sub)}</div></div></div>`).join('')
+        : '<div class="life-dashboard-empty">Nothing scheduled for today.</div>';
+    }
+
+    const dashDate=document.getElementById('life-dashboard-date');
+    if(dashDate){
+      const now=new Date();
+      dashDate.textContent=now.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'})+' · Riyadh';
     }
 
     // Money
@@ -10052,26 +10095,42 @@ document.addEventListener('DOMContentLoaded',()=>{
 
   async function fetchFX(){
     try{
-      const r=await fetch('https://open.er-api.com/v6/latest/USD',{cache:'no-store'});
+      // Use the Supabase market function so GitHub Pages can obtain the
+      // current Google Finance quote server-side without browser CORS limits.
+      const r=await fetch('/api/market?fxOnly=1&ts='+Date.now(),{cache:'no-store'});
       if(!r.ok)throw new Error('FX request failed');
       const j=await r.json();
-      const rates=j.rates||{};
-      if(!rates.SAR||!rates.EGP)throw new Error('Missing SAR/EGP');
-      fx.USD_SAR=Number(rates.SAR);
-      fx.USD_EGP=Number(rates.EGP);
-      fx.SAR_EGP=fx.USD_EGP/fx.USD_SAR;
+      const m=j&&j.fx?j.fx:{};
+      const sarEgp=Number(m.sarEgp);
+      const usdSar=Number(m.usdSar);
+      const usdEgp=Number(m.usdEgp);
+      if(!(sarEgp>0) || !(usdSar>0) || !(usdEgp>0))throw new Error('Missing Google Finance FX values');
+
+      fx.SAR_EGP=sarEgp;
+      fx.USD_SAR=usdSar;
+      fx.USD_EGP=usdEgp;
       fxUpdated=new Date();
+
       const last=document.getElementById('fx-last-updated');
       if(last)last.textContent=`Updated ${fxUpdated.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'})}`;
-      const source=document.getElementById('fx-source-name');if(source)source.textContent='Live FX feed';
-      // Keep the existing financial tracker conversion rate synchronized.
+
+      const source=document.getElementById('fx-source-name');
+      if(source)source.textContent=m.source||'Google Finance';
+
+      const sourceNote=document.querySelector('.fx-source-note');
+      if(sourceNote)sourceNote.textContent=(m.source||'Google Finance')+' · automatic refresh every 30 minutes, plus manual refresh.';
+
+      // Keep the Money sheet SAR -> EGP conversion synchronized with the
+      // exact SAR/EGP quote, rather than deriving it from a different provider.
       if(typeof appData!=='undefined' && appData && Math.abs(Number(appData.exchangeRate||0)-fx.SAR_EGP)>0.00001){
         appData.exchangeRate=fx.SAR_EGP;
         if(typeof saveAppData==='function')saveAppData();
         if(typeof renderAll==='function')renderAll();
       }
     }catch(e){
-      const last=document.getElementById('fx-last-updated');if(last)last.textContent='Live update unavailable · using last known rate';
+      console.warn('FX refresh failed',e);
+      const last=document.getElementById('fx-last-updated');
+      if(last)last.textContent='Live update unavailable · using last saved rate';
     }
     lifeFXRender();
     lifeOSRefreshDashboard();
@@ -10598,7 +10657,8 @@ document.addEventListener('DOMContentLoaded',()=>{
       if(code){
         const units=Number(pos.units)||0, unitPrice=Number(pos.unitPrice)||TRACKED_FUNDS[code].fallback;
         const asof=pos.priceDate?String(pos.priceDate).slice(0,10):'latest';
-        row.innerHTML=`<div style="min-width:0"><div><strong>${code}</strong><span class="market-auto-badge">AUTO NAV</span></div><div class="market-meta">${TRACKED_FUNDS[code].fullName}<br>Unit price: ${unitPrice.toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:5})} EGP · ${asof}</div></div><div style="text-align:right"><strong class="font-mono" style="font-size:13.5px">${fmtEGP(v.egp)}</strong><div class="market-meta">≈ ${fmtSAR(v.sar)}</div><div class="fund-units-wrap"><span class="market-meta">Units</span><input class="input-text fund-units-input" type="number" min="0" step="0.0001" value="${units||''}" placeholder="Enter units" onchange="lifeSetFundUnits(${idx},this.value)"></div></div>`;
+        const source=pos.priceSource||'SNDUK';
+        row.innerHTML=`<div style="min-width:0"><div><strong>${code}</strong><span class="market-auto-badge">AUTO NAV</span></div><div class="market-meta">${TRACKED_FUNDS[code].fullName}<br>Unit price: ${unitPrice.toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:5})} EGP · ${asof}<br>Source: ${source}</div></div><div style="text-align:right"><strong class="font-mono" style="font-size:13.5px">${fmtEGP(v.egp)}</strong><div class="market-meta">≈ ${fmtSAR(v.sar)}</div><div class="fund-units-wrap"><span class="market-meta">Units</span><input class="input-text fund-units-input" type="number" min="0" step="0.0001" value="${units||''}" placeholder="Enter units" onchange="lifeSetFundUnits(${idx},this.value)"></div></div>`;
       } else {
         const primary=v.isSAR?fmtSAR(pos.amount):fmtEGP(pos.amount), secondary=v.isSAR?`(${fmtEGP(v.egp)})`:`(≈ ${fmtSAR(v.sar)})`;
         row.innerHTML=`<div><span>${pos.name}</span><span style="font-size:10px;padding:2px 5px;border-radius:3px;background:rgba(255,255,255,.06);color:var(--text-muted);margin-left:4px">${pos.currency||'EGP'}</span></div><div style="display:flex;align-items:center;gap:6px"><div style="text-align:right"><strong class="font-mono" style="font-size:13.5px">${primary}</strong><div style="font-size:11px;color:var(--text-dim)">${secondary}</div></div><button class="action-btn-edit" style="font-size:12px" onclick="openEditAssetModal('thndr1',${idx})">✏️</button><button class="action-btn-del" style="font-size:12px" onclick="deleteAssetPos('thndr1',${idx})">✕</button></div>`;
@@ -10613,7 +10673,7 @@ document.addEventListener('DOMContentLoaded',()=>{
 
   function makeAutoFields(){
     const er=document.getElementById('input-exchange-rate');
-    if(er){er.readOnly=true;er.title='Automatically updated from Google Finance when available';const lab=er.previousElementSibling;if(lab)lab.innerHTML='SAR to EGP Exchange Rate <span class="market-auto-badge">AUTO · GOOGLE</span>';}
+    if(er){er.readOnly=true;er.title='Automatically updated from the live FX feed through Supabase';const lab=er.previousElementSibling;if(lab)lab.innerHTML='SAR to EGP Exchange Rate <span class="market-auto-badge">AUTO · LIVE</span>';}
     const gp=document.getElementById('input-gold-price');
     if(gp){gp.readOnly=true;gp.title='Automatically updated from live gold spot price';const lab=gp.previousElementSibling;if(lab)lab.innerHTML='24K Price per Gram (SAR) <span class="market-auto-badge">AUTO</span>';}
     const assetsHead=document.querySelector('#tab-assets .card-header > div:last-child');
