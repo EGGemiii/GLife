@@ -2972,6 +2972,7 @@ window.lifeExchangeTab=function(tab){
   function sbHeaders(extra={}){
     return {
       'apikey': SUPABASE_PUBLISHABLE_KEY,
+      'Authorization': `Bearer ${SUPABASE_PUBLISHABLE_KEY}`,
       ...extra
     };
   }
@@ -8964,7 +8965,10 @@ function lifeCalLoadEvents(){
   try { return JSON.parse(localStorage.getItem(LIFE_CAL_KEY) || '[]'); }
   catch(e){ return []; }
 }
-function lifeCalSaveEvents(events){ localStorage.setItem(LIFE_CAL_KEY, JSON.stringify(events)); }
+function lifeCalSaveEvents(events){
+  localStorage.setItem(LIFE_CAL_KEY,JSON.stringify(events));
+  setTimeout(()=>{try{if(typeof window.lifeOSSaveModuleNow==='function')window.lifeOSSaveModuleNow('calendar');}catch(e){}},50);
+}
 
 function lifeCalDateKey(d){
   const x = new Date(d); x.setHours(12,0,0,0);
@@ -9193,10 +9197,12 @@ function lifeVacEnsure(y){
 }
 function lifeVacSave(){
   localStorage.setItem(LIFE_VAC_KEY,JSON.stringify(lifeVacData));
-  // Push Vacation & Leave changes to Supabase immediately when available.
-  setTimeout(()=>{try{if(typeof window.lifeOSCloudSyncNow==='function')window.lifeOSCloudSyncNow();}catch(e){}},50);
+  setTimeout(()=>{try{if(typeof window.lifeOSSaveModuleNow==='function')window.lifeOSSaveModuleNow('vacation');}catch(e){}},50);
 }
-function lifeItSave(){localStorage.setItem(LIFE_IT_KEY,JSON.stringify(lifeItData))}
+function lifeItSave(){
+  localStorage.setItem(LIFE_IT_KEY,JSON.stringify(lifeItData));
+  setTimeout(()=>{try{if(typeof window.lifeOSSaveModuleNow==='function')window.lifeOSSaveModuleNow('itinerary');}catch(e){}},50);
+}
 function lifeVacKey(y,m,d){return `${m}-${d}`}
 function lifeVacParseKey(y,key){const [m,d]=key.split('-').map(Number);return new Date(y,m-1,d,12)}
 function lifeVacWeekend(y,m,d){
@@ -10783,7 +10789,8 @@ document.addEventListener('DOMContentLoaded',()=>{
 
 <script id="lifeos-supabase-module-sync">
 (function(){
-  const ENDPOINT='/api/data';
+  const SB_URL='https://lysitupenffmkryvxxli.supabase.co';
+  const SB_KEY='sb_publishable_vN_JscG4odGCUaVgr_OIQw_aDKkzyA7';
   const MODULE_KEYS={
     tasks:'lifeos.tasks.v1',
     calendar:'lifeos-calendar-events-v2',
@@ -10791,136 +10798,225 @@ document.addEventListener('DOMContentLoaded',()=>{
     itineraryMeta:'lifeos-itinerary-meta',
     vacation:'lifeos-vacation-v1'
   };
-  let lastSnapshot='';
-  let syncing=false;
-  let booting=true;
-  let localChangeTimer=null;
-  let suppressDirty=false;
 
+  const state={ready:false,loading:false,saving:new Set(),lastCloud:{}};
+  let suppressLocalWatch=false;
+  const timers={};
+
+  function headers(extra={}){
+    return {
+      apikey:SB_KEY,
+      Authorization:`Bearer ${SB_KEY}`,
+      ...extra
+    };
+  }
   function readJSON(key){
-    try{const raw=localStorage.getItem(key);return raw?JSON.parse(raw):null}catch(e){return null}
+    try{
+      const raw=localStorage.getItem(key);
+      return raw===null?null:JSON.parse(raw);
+    }catch(e){ return null; }
   }
-  function modules(){
-    return Object.fromEntries(Object.entries(MODULE_KEYS).map(([name,key])=>[name,readJSON(key)]));
+  function localPayload(name){ return readJSON(MODULE_KEYS[name]); }
+  function hasLocal(name){
+    try{return localStorage.getItem(MODULE_KEYS[name])!==null}catch(e){return false}
   }
-  function meaningful(m){return Object.values(m).some(v=>v!==null)}
-  function snapshot(){try{return JSON.stringify(modules())}catch(e){return ''}}
-  function markDirty(){
-    if(suppressDirty)return;
-    try{localStorage.setItem('lifeos.modules.dirty','1')}catch(e){}
-    window.dispatchEvent(new CustomEvent('lifeos:data-change'));
-    clearTimeout(localChangeTimer);
-    localChangeTimer=setTimeout(save,250);
-  }
+  function deepCopy(v){return v==null?v:JSON.parse(JSON.stringify(v));}
 
-  // Same-tab localStorage writes do not fire the browser's storage event.
-  // Watch the known LifeOS module keys so edits are pushed immediately.
-  const originalSetItem=Storage.prototype.setItem;
-  Storage.prototype.setItem=function(key,value){
-    const result=originalSetItem.call(this,key,value);
-    if(this===localStorage && Object.values(MODULE_KEYS).includes(key))markDirty();
-    return result;
-  };
-  const originalRemoveItem=Storage.prototype.removeItem;
-  Storage.prototype.removeItem=function(key){
-    const result=originalRemoveItem.call(this,key);
-    if(this===localStorage && Object.values(MODULE_KEYS).includes(key))markDirty();
-    return result;
-  };
-
-  async function getCloud(){
-    const r=await fetch(ENDPOINT,{cache:'no-store'});
-    if(!r.ok)throw new Error('Cloud request failed ('+r.status+')');
+  async function fetchModuleRows(){
+    const r=await fetch(`${SB_URL}/rest/v1/lifeos_modules?select=module_key,payload,updated_at`,{
+      cache:'no-store',
+      headers:headers({Accept:'application/json'})
+    });
+    if(!r.ok)throw new Error(`Module load failed (${r.status})`);
     return await r.json();
   }
 
-  async function load(){
+  async function fetchLegacyModules(){
     try{
-      const payload=await getCloud();
-      const m=payload&&payload.modules;
-      const dirty=localStorage.getItem('lifeos.modules.dirty')==='1';
-      if(dirty){
-        // Local edits from this browser are newer than the last cloud snapshot.
-        return false;
-      }
-      if(m && typeof m==='object' && meaningful(m)){
-        suppressDirty=true;
-        try{
-          Object.entries(MODULE_KEYS).forEach(([name,key])=>{
-            if(Object.prototype.hasOwnProperty.call(m,name) && m[name]!==null)localStorage.setItem(key,JSON.stringify(m[name]));
-          });
-          localStorage.removeItem('lifeos.modules.dirty');
-        }finally{ suppressDirty=false; }
-
-        // IMPORTANT: several modules keep an in-memory copy created before the
-        // asynchronous Supabase load finishes. Reload those copies now so opening
-        // Vacation & Leave cannot overwrite the freshly loaded cloud data with defaults.
-        try{
-          if(Object.prototype.hasOwnProperty.call(m,'vacation') && m.vacation!==null && typeof lifeVacData!=='undefined'){
-            lifeVacData=JSON.parse(JSON.stringify(m.vacation));
-          }
-          if(Object.prototype.hasOwnProperty.call(m,'itinerary') && m.itinerary!==null && typeof lifeItData!=='undefined'){
-            lifeItData=JSON.parse(JSON.stringify(m.itinerary));
-          }
-        }catch(syncErr){console.warn('LifeOS in-memory module refresh failed',syncErr);}
-
-        lastSnapshot=snapshot();
-        if(typeof window.lifeTasksRender==='function')window.lifeTasksRender();
-        if(typeof window.lifeCalRender==='function')window.lifeCalRender();
-        if(typeof window.lifeItRender==='function')window.lifeItRender();
-
-        // Vacation module does not expose lifeVacationRender in older builds.
-        // Explicitly reload the selected year from the cloud-backed in-memory object.
-        try{
-          if(typeof lifeVacationLoadYear==='function')lifeVacationLoadYear();
-          if(typeof lifeVacationUpdate==='function')lifeVacationUpdate();
-        }catch(vacErr){console.warn('Vacation refresh after cloud load failed',vacErr);}
-        if(typeof window.lifeOSRefreshDashboard==='function')window.lifeOSRefreshDashboard();
-        return true;
-      }
-      return false;
-    }catch(e){console.warn('LifeOS module cloud load unavailable',e);return false}
+      const r=await fetch('/api/data',{cache:'no-store'});
+      if(!r.ok)return null;
+      const j=await r.json();
+      return j && j.modules && typeof j.modules==='object' ? j.modules : null;
+    }catch(e){return null}
   }
 
-  async function save(force=false){
-    if(syncing)return false;
-    const snap=snapshot();
-    if(!snap)return false;
-    if(!force && snap===lastSnapshot && localStorage.getItem('lifeos.modules.dirty')!=='1')return true;
-    syncing=true;
+  async function upsertModule(name,payload){
+    if(!Object.prototype.hasOwnProperty.call(MODULE_KEYS,name))return false;
+    state.saving.add(name);
     try{
-      const payload=await getCloud().catch(()=>({}));
-      payload.modules=modules();
-      const r=await fetch(ENDPOINT,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
-      if(!r.ok)throw new Error('Cloud save failed ('+r.status+')');
-      lastSnapshot=snap;
-      suppressDirty=true;
-      try{localStorage.removeItem('lifeos.modules.dirty')}finally{suppressDirty=false}
+      const r=await fetch(`${SB_URL}/rest/v1/lifeos_modules?on_conflict=module_key`,{
+        method:'POST',
+        cache:'no-store',
+        headers:headers({
+          'Content-Type':'application/json',
+          'Prefer':'resolution=merge-duplicates,return=representation'
+        }),
+        body:JSON.stringify([{
+          module_key:name,
+          payload:payload,
+          updated_at:new Date().toISOString()
+        }])
+      });
+      if(!r.ok){
+        let detail='';try{detail=await r.text()}catch(e){}
+        throw new Error(`Module save failed (${r.status}) ${detail}`);
+      }
+      const rows=await r.json().catch(()=>[]);
+      state.lastCloud[name]=rows?.[0]?.updated_at||new Date().toISOString();
       return true;
-    }catch(e){console.warn('LifeOS module cloud save unavailable',e);return false}
-    finally{syncing=false}
+    }catch(e){
+      console.error(`LifeOS ${name} cloud save failed`,e);
+      return false;
+    }finally{
+      state.saving.delete(name);
+    }
   }
 
-  window.lifeOSCloudSyncNow=function(){return save(true)};
+  function refreshModule(name,payload){
+    // localStorage is the common source used by all LifeOS modules.
+    suppressLocalWatch=true;
+    try{
+      localStorage.setItem(MODULE_KEYS[name],JSON.stringify(payload));
+    }finally{suppressLocalWatch=false}
 
-  async function boot(){
-    await new Promise(r=>setTimeout(r,900));
-    const dirty=localStorage.getItem('lifeos.modules.dirty')==='1';
-    const hadCloud=dirty?false:await load();
-    if(!hadCloud)await save(true);
-    booting=false;
-    if(typeof window.lifeOSRefreshDashboard==='function')setTimeout(window.lifeOSRefreshDashboard,100);
-    setInterval(()=>save(false),1500);
+    // Refresh module-level in-memory state where needed.
+    try{
+      if(name==='vacation' && typeof lifeVacData!=='undefined'){
+        lifeVacData=deepCopy(payload)||{};
+        if(typeof lifeVacationLoadYear==='function')lifeVacationLoadYear();
+        if(typeof lifeVacationUpdate==='function')lifeVacationUpdate();
+      }
+      if(name==='itinerary' && typeof lifeItData!=='undefined'){
+        lifeItData=deepCopy(payload)||{};
+        if(typeof lifeItRender==='function')lifeItRender();
+      }
+      if(name==='calendar'){
+        if(typeof lifeCalendarRender==='function')lifeCalendarRender();
+      }
+      if(name==='tasks'){
+        if(typeof lifeTasksRender==='function')lifeTasksRender();
+      }
+    }catch(e){console.warn(`LifeOS ${name} refresh failed`,e)}
   }
 
-  window.addEventListener('lifeos:data-change',function(){
-    if(!booting)save(false);
+  async function bootstrap(){
+    if(state.loading)return;
+    state.loading=true;
+    try{
+      let rows=await fetchModuleRows();
+      const cloudByName=Object.fromEntries((rows||[]).map(r=>[r.module_key,r]));
+
+      // First v57 migration only: if the new per-module table is empty,
+      // prefer meaningful data already present in THIS browser. This preserves
+      // the user's current correct Vacation/Calendar settings. For keys absent
+      // locally, fall back to the previous lifeos_state.modules cloud object.
+      if(!rows || rows.length===0){
+        const legacy=await fetchLegacyModules();
+        for(const name of Object.keys(MODULE_KEYS)){
+          let payload=null;
+          if(hasLocal(name)) payload=localPayload(name);
+          else if(legacy && Object.prototype.hasOwnProperty.call(legacy,name)) payload=legacy[name];
+
+          if(payload!==null){
+            await upsertModule(name,payload);
+          }
+        }
+        rows=await fetchModuleRows();
+      }
+
+      // Cloud is the source of truth after initialization.
+      for(const row of rows||[]){
+        if(!Object.prototype.hasOwnProperty.call(MODULE_KEYS,row.module_key))continue;
+        state.lastCloud[row.module_key]=row.updated_at||'';
+        refreshModule(row.module_key,row.payload);
+      }
+
+      state.ready=true;
+      if(typeof window.lifeOSRefreshDashboard==='function')setTimeout(window.lifeOSRefreshDashboard,100);
+      window.dispatchEvent(new CustomEvent('lifeos:cloud-ready'));
+    }catch(e){
+      console.error('LifeOS Supabase module bootstrap failed',e);
+    }finally{
+      state.loading=false;
+    }
+  }
+
+  function scheduleSave(name){
+    if(!state.ready || suppressLocalWatch)return;
+    clearTimeout(timers[name]);
+    timers[name]=setTimeout(async()=>{
+      const payload=localPayload(name);
+      if(payload!==null)await upsertModule(name,payload);
+    },120);
+  }
+
+  // Same-tab localStorage writes do not fire storage events. Intercept the
+  // known LifeOS keys and save the specific module immediately.
+  const originalSetItem=Storage.prototype.setItem;
+  Storage.prototype.setItem=function(key,value){
+    const result=originalSetItem.call(this,key,value);
+    if(this===localStorage && !suppressLocalWatch){
+      const name=Object.keys(MODULE_KEYS).find(n=>MODULE_KEYS[n]===key);
+      if(name)scheduleSave(name);
+    }
+    return result;
+  };
+
+  const originalRemoveItem=Storage.prototype.removeItem;
+  Storage.prototype.removeItem=function(key){
+    const result=originalRemoveItem.call(this,key);
+    if(this===localStorage && !suppressLocalWatch){
+      const name=Object.keys(MODULE_KEYS).find(n=>MODULE_KEYS[n]===key);
+      if(name)scheduleSave(name);
+    }
+    return result;
+  };
+
+  // Explicit API used by Vacation, Calendar, backup/restore, and manual save.
+  window.lifeOSSaveModuleNow=async function(name){
+    if(!Object.prototype.hasOwnProperty.call(MODULE_KEYS,name))return false;
+    const payload=localPayload(name);
+    return payload===null?false:await upsertModule(name,payload);
+  };
+
+  window.lifeOSCloudSyncNow=async function(){
+    const results=[];
+    for(const name of Object.keys(MODULE_KEYS)){
+      if(hasLocal(name))results.push(await upsertModule(name,localPayload(name)));
+    }
+    return results.every(Boolean);
+  };
+
+  // Pull newer module rows from another browser without overwriting a module
+  // that this browser is actively saving.
+  window.lifeOSCloudRefreshModules=async function(){
+    if(!state.ready)return false;
+    try{
+      const rows=await fetchModuleRows();
+      for(const row of rows||[]){
+        const name=row.module_key;
+        if(!Object.prototype.hasOwnProperty.call(MODULE_KEYS,name) || state.saving.has(name))continue;
+        if((row.updated_at||'') !== (state.lastCloud[name]||'')){
+          state.lastCloud[name]=row.updated_at||'';
+          refreshModule(name,row.payload);
+        }
+      }
+      if(typeof window.lifeOSRefreshDashboard==='function')window.lifeOSRefreshDashboard();
+      return true;
+    }catch(e){console.warn('LifeOS cloud refresh failed',e);return false}
+  };
+
+  // Cross-tab updates in the same browser.
+  window.addEventListener('storage',e=>{
+    const name=Object.keys(MODULE_KEYS).find(n=>MODULE_KEYS[n]===e.key);
+    if(name && state.ready)scheduleSave(name);
   });
-  window.addEventListener('beforeunload',function(){
-    // The normal immediate sync is the reliable path. beforeunload is only best effort.
-    save(true);
+
+  document.addEventListener('DOMContentLoaded',async()=>{
+    await new Promise(r=>setTimeout(r,250));
+    await bootstrap();
+    setInterval(()=>window.lifeOSCloudRefreshModules(),30000);
   });
-  document.addEventListener('DOMContentLoaded',boot);
 })();
 </script>
 
