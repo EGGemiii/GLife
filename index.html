@@ -1819,6 +1819,25 @@
 .life-shell.dark-mode .itinerary-list .itinerary-empty{background:#111827!important;border-color:#39465d!important}
 .life-shell.dark-mode .itinerary-summary>div{background:#111827!important}
 
+
+/* Embedded Finishing Apartment page */
+.embedded-app-page{height:calc(100vh - 28px);display:flex;flex-direction:column;gap:12px;padding:0}
+.embedded-app-toolbar{display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap}
+.embedded-app-toolbar h1{margin:0;font-size:26px}
+.embedded-app-toolbar p{margin:4px 0 0;color:var(--life-muted,#8791a5);font-size:12px}
+.embedded-app-actions{display:flex;gap:8px;align-items:center}
+.embedded-app-shell{flex:1;min-height:560px;border:1px solid var(--border-color,#dfe3e8);border-radius:14px;overflow:hidden;background:#fff;box-shadow:var(--shadow)}
+.embedded-app-shell iframe{width:100%;height:100%;min-height:calc(100vh - 125px);border:0;display:block;background:#fff}
+.life-shell.dark-mode .embedded-app-shell{border-color:#303a55;background:#111526}
+@media(max-width:760px){
+  .embedded-app-page{height:auto}
+  .embedded-app-shell{min-height:720px}
+  .embedded-app-shell iframe{min-height:720px}
+  .embedded-app-toolbar{align-items:flex-start}
+  .embedded-app-actions{width:100%}
+  .embedded-app-actions button{flex:1}
+}
+
 </style>
 
 <style>
@@ -3034,6 +3053,7 @@ window.lifeExchangeTab=function(tab){
       <a href="#tasks" data-page="tasks">✓ <span>Tasks</span></a>
       <a href="#money" data-page="money">₿ <span>Money</span></a>
       <a href="#currency" data-page="currency">⇄ <span>Currency</span></a>
+      <a href="#finishing-apt" data-page="finishing-apt">🏠 <span>Finishing Apt.</span></a>
       <a href="#settings" data-page="settings">⚙ <span>Settings</span></a>
     </nav>
     <div class="life-data-tools" aria-label="LifeOS data tools">
@@ -6652,6 +6672,22 @@ window.addEventListener('DOMContentLoaded', async () => {
         </div>
       </div>
     </section>
+
+    <section id="page-finishing-apt" class="life-page finishing-apt-full-page">
+      <div class="embedded-app-page embedded-app-page-full">
+        <div class="embedded-app-shell embedded-app-shell-full">
+          <iframe
+            id="finishing-apt-frame"
+            title="Saint Fatima Apartment Finishing Tracker"
+            src="https://eggemiii.github.io/saintfatima/"
+            loading="lazy"
+            referrerpolicy="strict-origin-when-cross-origin"
+            allow="clipboard-read; clipboard-write; fullscreen"
+          ></iframe>
+        </div>
+      </div>
+    </section>
+
     <section id="page-settings" class="life-page">
       <div class="life-settings-page">
         <div class="life-settings-head"><div><h1>Settings</h1><p>Manage your LifeOS data, backups and cloud storage.</p></div></div>
@@ -9155,7 +9191,11 @@ function lifeVacEnsure(y){
   if(!lifeVacData[y]) lifeVacData[y]={selected:[],settings:{weekend:'fri-sat',alt:'first',deduction:'work',carry:0,startDate:'2026-06-01',entitlement:30}};
   if(!lifeVacData[y].settings) lifeVacData[y].settings={weekend:'fri-sat',alt:'first',deduction:'work',carry:0};
 }
-function lifeVacSave(){localStorage.setItem(LIFE_VAC_KEY,JSON.stringify(lifeVacData))}
+function lifeVacSave(){
+  localStorage.setItem(LIFE_VAC_KEY,JSON.stringify(lifeVacData));
+  // Push Vacation & Leave changes to Supabase immediately when available.
+  setTimeout(()=>{try{if(typeof window.lifeOSCloudSyncNow==='function')window.lifeOSCloudSyncNow();}catch(e){}},50);
+}
 function lifeItSave(){localStorage.setItem(LIFE_IT_KEY,JSON.stringify(lifeItData))}
 function lifeVacKey(y,m,d){return `${m}-${d}`}
 function lifeVacParseKey(y,key){const [m,d]=key.split('-').map(Number);return new Date(y,m-1,d,12)}
@@ -10433,16 +10473,52 @@ document.addEventListener('DOMContentLoaded',()=>{
       const usdEgp=document.getElementById('dash-usd-egp');if(usdEgp)usdEgp.textContent=`${fx.USD_EGP.toFixed(4)} EGP`;
     }catch(e){}
 
-    // Current accrued leave / absence balance from Vacation & Leave.
+    // Current accrued leave / absence balance, read-only from the saved Vacation data.
+    // Do not call lifeVacationUpdate here because the dashboard must never mutate leave settings.
     try{
-      if(typeof lifeVacationUpdate==='function') lifeVacationUpdate();
-      const liveBal=document.getElementById('life-vac-balance');
-      const bal=liveBal ? Number(liveBal.textContent) : NaN;
-      const value=Number.isFinite(bal) ? `${bal.toFixed(1)} days` : 'Not set';
+      const nowVac=new Date(); nowVac.setHours(12,0,0,0);
+      const y=nowVac.getFullYear();
+      let vac=null;
+      try{
+        const raw=localStorage.getItem('lifeos-vacation-v1');
+        vac=raw?JSON.parse(raw):null;
+      }catch(e){}
+      const yd=vac && vac[y] ? vac[y] : null;
+      let bal=NaN;
+      if(yd && yd.settings){
+        const s=yd.settings;
+        const entitlement=Math.max(0,Number(s.entitlement)||0);
+        const carry=Math.max(0,Number(s.carry)||0);
+        const startRaw=s.startDate||`${y}-01-01`;
+        const start=new Date(startRaw+'T12:00:00');
+        const yearStart=new Date(y,0,1,12), yearEnd=new Date(y,11,31,12);
+        const accrualStart=new Date(Math.max(start.getTime(),yearStart.getTime()));
+        const asOf=new Date(Math.min(nowVac.getTime(),yearEnd.getTime()));
+        let accrued=0;
+        if(!isNaN(start) && asOf>=accrualStart){
+          const daysInYear=(new Date(y+1,0,1)-yearStart)/86400000;
+          const elapsed=(asOf-accrualStart)/86400000+1;
+          accrued=Math.min(entitlement,entitlement*(elapsed/daysInYear));
+        }
+
+        const selected=new Set(Array.isArray(yd.selected)?yd.selected:[]);
+        let deducted=new Set(selected);
+        // Match the Vacation module's automatic deduction rule when those helpers exist.
+        try{
+          if(typeof lifeVacAutoDeducted==='function'){
+            // Temporarily use the already-saved data without touching UI/settings.
+            const auto=lifeVacAutoDeducted(y,selected);
+            deducted=new Set([...selected,...auto]);
+          }
+        }catch(e){}
+        bal=Math.max(0,carry+accrued-deducted.size);
+      }
+
+      const value=Number.isFinite(bal)?`${bal.toFixed(1)} days`:'Not set';
       const a=document.getElementById('dash-leave-balance'); if(a)a.textContent=value;
       const b=document.getElementById('dash-leave-balance-planning'); if(b)b.textContent=value;
       const note=document.getElementById('dash-leave-note');
-      if(note)note.textContent=Number.isFinite(bal)?'Accrued + carry-over − deductions':'Set up Vacation & Leave';
+      if(note)note.textContent=Number.isFinite(bal)?'Current accrued available balance':'Set up Vacation & Leave';
     }catch(e){
       const a=document.getElementById('dash-leave-balance'); if(a)a.textContent='Not set';
       const b=document.getElementById('dash-leave-balance-planning'); if(b)b.textContent='Not set';
@@ -10775,11 +10851,31 @@ document.addEventListener('DOMContentLoaded',()=>{
           });
           localStorage.removeItem('lifeos.modules.dirty');
         }finally{ suppressDirty=false; }
+
+        // IMPORTANT: several modules keep an in-memory copy created before the
+        // asynchronous Supabase load finishes. Reload those copies now so opening
+        // Vacation & Leave cannot overwrite the freshly loaded cloud data with defaults.
+        try{
+          if(Object.prototype.hasOwnProperty.call(m,'vacation') && m.vacation!==null && typeof lifeVacData!=='undefined'){
+            lifeVacData=JSON.parse(JSON.stringify(m.vacation));
+          }
+          if(Object.prototype.hasOwnProperty.call(m,'itinerary') && m.itinerary!==null && typeof lifeItData!=='undefined'){
+            lifeItData=JSON.parse(JSON.stringify(m.itinerary));
+          }
+        }catch(syncErr){console.warn('LifeOS in-memory module refresh failed',syncErr);}
+
         lastSnapshot=snapshot();
         if(typeof window.lifeTasksRender==='function')window.lifeTasksRender();
         if(typeof window.lifeCalRender==='function')window.lifeCalRender();
         if(typeof window.lifeItRender==='function')window.lifeItRender();
-        if(typeof window.lifeVacationRender==='function')window.lifeVacationRender();
+
+        // Vacation module does not expose lifeVacationRender in older builds.
+        // Explicitly reload the selected year from the cloud-backed in-memory object.
+        try{
+          if(typeof lifeVacationLoadYear==='function')lifeVacationLoadYear();
+          if(typeof lifeVacationUpdate==='function')lifeVacationUpdate();
+        }catch(vacErr){console.warn('Vacation refresh after cloud load failed',vacErr);}
+        if(typeof window.lifeOSRefreshDashboard==='function')window.lifeOSRefreshDashboard();
         return true;
       }
       return false;
@@ -10813,6 +10909,7 @@ document.addEventListener('DOMContentLoaded',()=>{
     const hadCloud=dirty?false:await load();
     if(!hadCloud)await save(true);
     booting=false;
+    if(typeof window.lifeOSRefreshDashboard==='function')setTimeout(window.lifeOSRefreshDashboard,100);
     setInterval(()=>save(false),1500);
   }
 
