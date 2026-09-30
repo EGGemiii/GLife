@@ -9987,6 +9987,14 @@ document.addEventListener('DOMContentLoaded',()=>{
     try{const x=JSON.parse(localStorage.getItem(KEY)||'null'); tasks=Array.isArray(x)?x:seed.map(x=>({...x}));}
     catch(e){tasks=seed.map(x=>({...x}))}
   }
+
+  // Used by Supabase sync after another browser/device updates the Tasks row.
+  // Rendering alone is not enough because this module keeps its own in-memory array.
+  window.lifeTasksReloadFromStorage=function(){
+    load();
+    if(typeof window.lifeTasksRender==='function')window.lifeTasksRender();
+    if(typeof window.lifeOSRefreshDashboard==='function')setTimeout(window.lifeOSRefreshDashboard,30);
+  };
   function filtered(){
     const q=(document.getElementById('tasks-search')?.value||'').toLowerCase().trim();
     const pri=document.getElementById('tasks-priority-filter')?.value||'all';
@@ -10144,8 +10152,18 @@ document.addEventListener('DOMContentLoaded',()=>{
     }else if(!t.done){
       t.completedAt=null;
     }
+
+    // Save locally immediately, then persist the exact full Tasks array
+    // to its dedicated Supabase module row.
     save();
-    setTimeout(()=>{try{if(typeof window.lifeOSSaveModuleNow==='function')window.lifeOSSaveModuleNow('tasks');}catch(e){}},50);
+    setTimeout(async()=>{
+      try{
+        if(typeof window.lifeOSSaveModuleNow==='function'){
+          await window.lifeOSSaveModuleNow('tasks');
+        }
+      }catch(e){console.warn('GLife task cloud save failed',e)}
+    },50);
+
     lifeTasksRender();
     if(typeof window.lifeOSRefreshDashboard==='function')setTimeout(window.lifeOSRefreshDashboard,50);
   };
@@ -11017,7 +11035,7 @@ document.addEventListener('DOMContentLoaded',()=>{
     vacation:'lifeos-vacation-v1'
   };
 
-  const state={ready:false,loading:false,saving:new Set(),lastCloud:{}};
+  const state={ready:false,loading:false,saving:new Set(),lastCloud:{},hydratedAt:0};
   let suppressLocalWatch=false;
   const timers={};
 
@@ -11058,8 +11076,14 @@ document.addEventListener('DOMContentLoaded',()=>{
     }catch(e){return null}
   }
 
-  async function upsertModule(name,payload){
+  async function upsertModule(name,payload,force=false){
     if(!Object.prototype.hasOwnProperty.call(MODULE_KEYS,name))return false;
+
+    // CRITICAL: never allow default/empty module values created during page startup
+    // to overwrite Supabase before the initial cloud state has been loaded.
+    // Only bootstrap/migration code may bypass this with force=true.
+    if(!state.ready && !force)return false;
+
     state.saving.add(name);
     try{
       const r=await fetch(`${SB_URL}/rest/v1/lifeos_modules?on_conflict=module_key`,{
@@ -11112,7 +11136,11 @@ document.addEventListener('DOMContentLoaded',()=>{
         if(typeof lifeCalendarRender==='function')lifeCalendarRender();
       }
       if(name==='tasks'){
-        if(typeof lifeTasksRender==='function')lifeTasksRender();
+        if(typeof window.lifeTasksReloadFromStorage==='function'){
+          window.lifeTasksReloadFromStorage();
+        }else if(typeof lifeTasksRender==='function'){
+          lifeTasksRender();
+        }
       }
     }catch(e){console.warn(`LifeOS ${name} refresh failed`,e)}
   }
@@ -11136,7 +11164,7 @@ document.addEventListener('DOMContentLoaded',()=>{
           else if(legacy && Object.prototype.hasOwnProperty.call(legacy,name)) payload=legacy[name];
 
           if(payload!==null){
-            await upsertModule(name,payload);
+            await upsertModule(name,payload,true);
           }
         }
         rows=await fetchModuleRows();
@@ -11150,6 +11178,7 @@ document.addEventListener('DOMContentLoaded',()=>{
       }
 
       state.ready=true;
+      state.hydratedAt=Date.now();
       if(typeof window.lifeOSRefreshDashboard==='function')setTimeout(window.lifeOSRefreshDashboard,100);
       window.dispatchEvent(new CustomEvent('lifeos:cloud-ready'));
     }catch(e){
@@ -11160,9 +11189,12 @@ document.addEventListener('DOMContentLoaded',()=>{
   }
 
   function scheduleSave(name){
-    if(!state.ready || suppressLocalWatch)return;
+    // Startup writes are intentionally discarded. They often come from UI defaults
+    // before Supabase has loaded and must never be replayed later.
+    if(!state.ready || suppressLocalWatch || (Date.now()-state.hydratedAt)<1000)return;
     clearTimeout(timers[name]);
     timers[name]=setTimeout(async()=>{
+      if(!state.ready)return;
       const payload=localPayload(name);
       if(payload!==null)await upsertModule(name,payload);
     },120);
@@ -11193,11 +11225,19 @@ document.addEventListener('DOMContentLoaded',()=>{
   // Explicit API used by Vacation, Calendar, backup/restore, and manual save.
   window.lifeOSSaveModuleNow=async function(name){
     if(!Object.prototype.hasOwnProperty.call(MODULE_KEYS,name))return false;
+    if(!state.ready || (Date.now()-state.hydratedAt)<1000){
+      console.debug(`GLife ${name}: startup save ignored until Supabase hydration is stable`);
+      return false;
+    }
     const payload=localPayload(name);
     return payload===null?false:await upsertModule(name,payload);
   };
 
   window.lifeOSCloudSyncNow=async function(){
+    if(!state.ready){
+      console.debug('GLife cloud save ignored until initial Supabase load completes');
+      return false;
+    }
     const results=[];
     for(const name of Object.keys(MODULE_KEYS)){
       if(hasLocal(name))results.push(await upsertModule(name,localPayload(name)));
@@ -11222,6 +11262,22 @@ document.addEventListener('DOMContentLoaded',()=>{
       if(typeof window.lifeOSRefreshDashboard==='function')window.lifeOSRefreshDashboard();
       return true;
     }catch(e){console.warn('LifeOS cloud refresh failed',e);return false}
+  };
+
+  window.glifeRefreshTasksFromCloud=async function(){
+    const ok=await window.lifeOSCloudRefreshModules?.();
+    if(typeof window.lifeTasksReloadFromStorage==='function')window.lifeTasksReloadFromStorage();
+    return ok;
+  };
+
+  window.glifeCloudModuleStatus=function(){
+    return {
+      ready:state.ready,
+      loading:state.loading,
+      saving:[...state.saving],
+      lastCloud:{...state.lastCloud},
+      hydratedAt:state.hydratedAt
+    };
   };
 
   // Cross-tab updates in the same browser.
