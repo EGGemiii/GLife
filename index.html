@@ -1033,9 +1033,80 @@
 
 
 .vac-summary-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
-.vac-summary-grid>div{background:#f7f8fa;border-radius:9px;padding:10px}.vac-summary-grid span{display:block;font-size:9px;color:#98a2b3;text-transform:uppercase;font-weight:800}.vac-summary-grid strong{display:block;font-size:17px;margin-top:4px}
-.vac-summary-dates{display:flex;flex-wrap:wrap;gap:6px}.vac-summary-dates span{font-size:10px;background:#f7f8fa;border:1px solid #edf0f3;border-radius:7px;padding:6px 8px;color:#475467}
+.vac-summary-grid>div{
+  background:var(--life-card-soft,#f7f8fa);
+  border:1px solid var(--life-border,#edf0f3);
+  border-radius:9px;
+  padding:10px;
+}
+.vac-summary-grid span{
+  display:block;
+  font-size:9px;
+  color:var(--life-muted,#98a2b3);
+  text-transform:uppercase;
+  font-weight:800;
+}
+.vac-summary-grid strong{
+  display:block;
+  font-size:17px;
+  margin-top:4px;
+  color:var(--life-text,#111827);
+}
+.vac-summary-dates{display:flex;flex-wrap:wrap;gap:6px}
+.vac-summary-dates span{
+  font-size:10px;
+  background:var(--life-card-soft,#f7f8fa);
+  border:1px solid var(--life-border,#edf0f3);
+  border-radius:7px;
+  padding:6px 8px;
+  color:var(--life-text-soft,#475467);
+}
+#life-vac-summary-modal .life-modal{
+  background:var(--life-card,#ffffff);
+  color:var(--life-text,#111827);
+}
+#life-vac-summary-modal h2,
+#life-vac-summary-modal h3{
+  color:var(--life-text,#111827);
+}
+#life-vac-summary-modal p{
+  color:var(--life-muted,#667085);
+}
+.life-shell.dark-mode{
+  --life-card:#171a2b;
+  --life-card-soft:#22263a;
+  --life-border:#343a55;
+  --life-text:#f4f6fb;
+  --life-text-soft:#d7dced;
+  --life-muted:#9da8bd;
+}
+.life-shell.dark-mode #life-vac-summary-modal .life-modal{
+  background:#181b2c!important;
+  border-color:#343a55!important;
+}
+.life-shell.dark-mode .vac-summary-grid>div{
+  background:#25293d!important;
+  border-color:#3a405d!important;
+}
+.life-shell.dark-mode .vac-summary-grid strong{
+  color:#f8fafc!important;
+}
+.life-shell.dark-mode .vac-summary-grid span{
+  color:#9da8bd!important;
+}
+.life-shell.dark-mode .vac-summary-dates span{
+  background:#25293d!important;
+  border-color:#3a405d!important;
+  color:#e2e8f0!important;
+}
 @media(max-width:600px){.vac-summary-grid{grid-template-columns:1fr 1fr}}
+
+.life-shell.dark-mode #life-vac-summary-modal .modal-close-btn{
+  background:#2b3046!important;
+  color:#f8fafc!important;
+  border-color:#3a405d!important;
+}
+
 
 
 #calendar-main-workspace{display:block}
