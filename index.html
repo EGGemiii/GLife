@@ -2008,6 +2008,76 @@
 /* GLife Football v72 theme + personalized overview */
 
 /* GLife Football v73 followed-player comparisons */
+
+/* GLife Football v74 leaderboard + followed-player fixes */
+.football-leaderboard-layout{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:12px;
+}
+.football-leaderboard-card{padding:0!important;overflow:hidden}
+.football-leaderboard-card-head{
+  display:flex;justify-content:space-between;align-items:center;gap:12px;
+  padding:16px 16px 13px;border-bottom:1px solid var(--fb-border)
+}
+.football-leaderboard-card-head h2{margin:2px 0 3px;font-size:20px}
+.football-leaderboard-kicker{
+  display:block;font-size:8px;text-transform:uppercase;letter-spacing:.08em;
+  color:var(--fb-accent);font-weight:900
+}
+.football-leaderboard-icon{
+  width:38px;height:38px;border-radius:10px;display:grid;place-items:center;
+  background:var(--fb-accent-soft);font-size:18px
+}
+.football-table-head{
+  display:grid;grid-template-columns:34px 34px minmax(125px,1fr) minmax(100px,.75fr) 54px 28px;
+  gap:8px;align-items:center;padding:8px 12px;
+  background:color-mix(in srgb,var(--fb-surface-soft) 75%,transparent);
+  border-bottom:1px solid var(--fb-border);
+  font-size:8px;text-transform:uppercase;letter-spacing:.04em;color:var(--fb-muted);font-weight:900
+}
+.football-leader-table .football-leader-row{
+  display:grid!important;
+  grid-template-columns:34px 34px minmax(125px,1fr) minmax(100px,.75fr) 54px 28px!important;
+  min-height:52px;
+  gap:8px;align-items:center;
+  padding:8px 12px!important;
+  border-bottom:1px solid var(--fb-border);
+  border-radius:0!important
+}
+.football-leader-table .football-leader-row:last-child{border-bottom:0}
+.football-leader-table .football-player-avatar{
+  width:32px!important;height:32px!important;border-radius:50%;object-fit:cover
+}
+.football-leader-table .football-player-name{font-size:10px;line-height:1.2}
+.football-leader-table .football-player-teamline{grid-column:auto}
+.football-leader-table .football-player-teamline img{width:16px;height:16px}
+.football-leader-table .football-player-team{font-size:9px}
+.football-leader-table .football-stat{font-size:14px;text-align:center}
+.football-leader-table .football-star-btn{font-size:15px;padding:0}
+.football-leader-table .football-rank{text-align:center}
+.football-leader-table .football-leader-row.followed{
+  background:color-mix(in srgb,var(--fb-gold) 8%,var(--fb-surface-soft))
+}
+
+/* Comparison card now works even when player league is not explicitly followed */
+.football-player-compare-card .football-compare-stat-top strong{color:var(--fb-text)}
+.football-compare-vs strong{color:var(--fb-text)}
+
+@media(max-width:1250px){
+  .football-leaderboard-layout{grid-template-columns:1fr}
+}
+@media(max-width:700px){
+  .football-table-head{
+    grid-template-columns:28px minmax(125px,1fr) 52px 28px;
+  }
+  .football-table-head span:nth-child(3){display:none}
+  .football-leader-table .football-leader-row{
+    grid-template-columns:28px 32px minmax(110px,1fr) 48px 26px!important;
+  }
+  .football-leader-table .football-player-teamline{display:none}
+}
+
 .football-followed-player-comparison{display:flex;flex-direction:column;gap:9px}
 .football-player-compare-card{
   border:1px solid var(--fb-border);
@@ -7403,27 +7473,43 @@ window.addEventListener('DOMContentLoaded', async () => {
           <div class="life-card football-leader-controls">
             <div>
               <h2>League leaderboards</h2>
-              <p>Choose a followed league, or select any league above, to see the full season tables.</p>
+              <p>Full season scoring and assist rankings for the selected league.</p>
             </div>
             <div class="football-league-select-wrap">
               <label for="football-leader-league-select">League</label>
               <select id="football-leader-league-select" onchange="glifeFootballLeaderLeagueChange(this.value)"></select>
             </div>
           </div>
-          <div class="grid football-leaders-grid">
-            <div class="life-card">
-              <div class="card-header">
-                <div><h2>Top scorers</h2><div class="dash-card-subtitle" id="football-scorers-league-label">Current league</div></div>
-                <span class="football-source-label">Full table</span>
+
+          <div class="football-leaderboard-layout">
+            <div class="life-card football-leaderboard-card">
+              <div class="football-leaderboard-card-head">
+                <div>
+                  <span class="football-leaderboard-kicker">Goals</span>
+                  <h2>Top scorers</h2>
+                  <div class="dash-card-subtitle" id="football-scorers-league-label">Current league</div>
+                </div>
+                <div class="football-leaderboard-icon">⚽</div>
               </div>
-              <div id="football-scorers-list" class="football-leader-list"></div>
+              <div class="football-table-head">
+                <span>#</span><span></span><span>Player</span><span>Club</span><span>Goals</span><span></span>
+              </div>
+              <div id="football-scorers-list" class="football-leader-list football-leader-table"></div>
             </div>
-            <div class="life-card">
-              <div class="card-header">
-                <div><h2>Top assists</h2><div class="dash-card-subtitle" id="football-assists-league-label">Current league</div></div>
-                <span class="football-source-label">Full table</span>
+
+            <div class="life-card football-leaderboard-card">
+              <div class="football-leaderboard-card-head">
+                <div>
+                  <span class="football-leaderboard-kicker">Assists</span>
+                  <h2>Top assists</h2>
+                  <div class="dash-card-subtitle" id="football-assists-league-label">Current league</div>
+                </div>
+                <div class="football-leaderboard-icon">🎯</div>
               </div>
-              <div id="football-assists-list" class="football-leader-list"></div>
+              <div class="football-table-head">
+                <span>#</span><span></span><span>Player</span><span>Club</span><span>Assists</span><span></span>
+              </div>
+              <div id="football-assists-list" class="football-leader-list football-leader-table"></div>
             </div>
           </div>
         </div>
@@ -10188,13 +10274,23 @@ document.addEventListener('DOMContentLoaded',()=>{
     el.innerHTML=list.map((r,i)=>{
       const isFollowed=followed('player',r.id);
       const cls=limit?'football-mini-leader':'football-leader-row';
+      if(limit){
+        return `<div class="${cls} ${isFollowed?'followed':''}">
+          <span class="football-rank">${r.rank||i+1}</span>
+          <img class="football-player-avatar" src="${playerFace(r.id)}" alt="" onerror="this.style.visibility='hidden'">
+          <div>
+            <span class="football-player-name">${esc(r.name)}</span>
+            <span class="football-player-teamline">${r.teamId?`<img src="${teamLogo(r.teamId)}" alt="" onerror="this.style.visibility='hidden'">`:''}<span class="football-player-team">${esc(r.team)}</span></span>
+          </div>
+          <strong class="football-stat">${r.value}</strong>
+          <button class="football-star-btn ${isFollowed?'followed':''}" onclick="glifeFootballToggleFollow('player','${esc(r.id)}','${esc(r.name)}','${esc(r.team)}')">${isFollowed?'★':'☆'}</button>
+        </div>`;
+      }
       return `<div class="${cls} ${isFollowed?'followed':''}">
         <span class="football-rank">${r.rank||i+1}</span>
         <img class="football-player-avatar" src="${playerFace(r.id)}" alt="" onerror="this.style.visibility='hidden'">
-        <div>
-          <span class="football-player-name">${esc(r.name)}</span>
-          <span class="football-player-teamline">${r.teamId?`<img src="${teamLogo(r.teamId)}" alt="" onerror="this.style.visibility='hidden'">`:''}<span class="football-player-team">${esc(r.team)}</span></span>
-        </div>
+        <span class="football-player-name">${esc(r.name)}</span>
+        <span class="football-player-teamline">${r.teamId?`<img src="${teamLogo(r.teamId)}" alt="" onerror="this.style.visibility='hidden'">`:''}<span class="football-player-team">${esc(r.team)}</span></span>
         <strong class="football-stat">${r.value}</strong>
         <button class="football-star-btn ${isFollowed?'followed':''}" onclick="glifeFootballToggleFollow('player','${esc(r.id)}','${esc(r.name)}','${esc(r.team)}')">${isFollowed?'★':'☆'}</button>
       </div>`;
@@ -10407,6 +10503,56 @@ document.addEventListener('DOMContentLoaded',()=>{
     return new Set((prefs.following||[]).filter(x=>x.type==='player').map(x=>String(x.id)));
   }
 
+  function extractPrimaryLeagueFromTeam(teamData){
+    const d=teamData?.details||{};
+    const candidates=[
+      {id:d.primaryLeagueId,name:d.primaryLeagueName,country:d.country},
+      {id:teamData?.primaryLeague?.id,name:teamData?.primaryLeague?.name,country:d.country},
+      {id:teamData?.league?.id,name:teamData?.league?.name,country:d.country}
+    ];
+    for(const x of candidates){
+      if(x.id&&x.name)return {type:'league',id:x.id,name:x.name,sub:x.country||''};
+    }
+
+    // Fallback: infer from fixtures. FotMob team fixture objects commonly expose
+    // leagueId / leagueName on the match rows.
+    const raw=[
+      ...(teamData?.fixtures?.allFixtures?.fixtures||[]),
+      ...(teamData?.fixtures?.allMatches||[]),
+      ...(teamData?.fixtures?.fixtures||[])
+    ];
+    const counts=new Map();
+    for(const m of raw){
+      const id=m.leagueId||m.tournamentId||m.league?.id;
+      const name=m.leagueName||m.tournamentName||m.league?.name;
+      if(!id||!name)continue;
+      const k=String(id);
+      const cur=counts.get(k)||{type:'league',id,name,sub:d.country||'',count:0};
+      cur.count++;counts.set(k,cur);
+    }
+    const best=[...counts.values()].sort((a,b)=>b.count-a.count)[0];
+    return best?{type:'league',id:best.id,name:best.name,sub:best.sub||''}:null;
+  }
+
+  async function resolvePlayerLeague(playerFollow){
+    try{
+      const p=await api('player',{id:playerFollow.id});
+      const primary=p?.primaryTeam||{};
+      const teamId=primary.teamId||primary.id;
+      const teamName=primary.teamName||primary.name||playerFollow.sub||'';
+
+      if(!teamId)return {playerData:p,teamData:null,league:null,teamName};
+
+      const t=await api('team',{id:teamId});
+      const league=extractPrimaryLeagueFromTeam(t);
+
+      return {playerData:p,teamData:t,league,teamName};
+    }catch(e){
+      console.warn('Player league resolution failed',playerFollow,e);
+      return {playerData:null,teamData:null,league:null,teamName:playerFollow.sub||''};
+    }
+  }
+
   async function getLeagueFullStats(league){
     try{
       const d=await api('league',{id:league.id});
@@ -10437,41 +10583,54 @@ document.addEventListener('DOMContentLoaded',()=>{
 
   async function getFollowedPlayerComparisons(){
     const players=(prefs.following||[]).filter(x=>x.type==='player');
-    const leagues=(prefs.following||[]).filter(x=>x.type==='league');
-    if(!players.length || !leagues.length)return [];
+    if(!players.length)return [];
 
-    const leagueStats=[];
-    for(const league of leagues){
-      const stats=await getLeagueFullStats(league);
-      leagueStats.push({league,...stats});
-    }
-
+    const leagueCache=new Map();
     const rows=[];
+
     for(const player of players){
-      for(const ls of leagueStats){
-        const gIndex=ls.goals.findIndex(r=>String(r.id)===String(player.id));
-        const aIndex=ls.assists.findIndex(r=>String(r.id)===String(player.id));
-        if(gIndex<0 && aIndex<0)continue;
+      const resolved=await resolvePlayerLeague(player);
+      const league=resolved.league;
 
-        const g= gIndex>=0 ? ls.goals[gIndex] : {value:0,rank:null,team:player.sub||''};
-        const a= aIndex>=0 ? ls.assists[aIndex] : {value:0,rank:null,team:g.team||player.sub||''};
-        const topGoal=ls.goals[0]||{value:0,name:'—'};
-        const topAssist=ls.assists[0]||{value:0,name:'—'};
-
+      if(!league){
         rows.push({
-          player,
-          league:ls.league,
-          team:g.team||a.team||player.sub||'',
-          goals:Number(g.value||0),
-          goalRank:g.rank||gIndex+1||null,
-          topGoals:Number(topGoal.value||0),
-          topGoalName:topGoal.name||'—',
-          assists:Number(a.value||0),
-          assistRank:a.rank||aIndex+1||null,
-          topAssists:Number(topAssist.value||0),
-          topAssistName:topAssist.name||'—'
+          player,league:null,team:resolved.teamName||player.sub||'',
+          goals:null,goalRank:null,topGoals:null,topGoalName:'—',
+          assists:null,assistRank:null,topAssists:null,topAssistName:'—',
+          unavailable:true
         });
+        continue;
       }
+
+      const leagueKey=String(league.id);
+      let stats=leagueCache.get(leagueKey);
+      if(!stats){
+        stats=await getLeagueFullStats(league);
+        leagueCache.set(leagueKey,stats);
+      }
+
+      const gIndex=stats.goals.findIndex(r=>String(r.id)===String(player.id));
+      const aIndex=stats.assists.findIndex(r=>String(r.id)===String(player.id));
+
+      const g=gIndex>=0?stats.goals[gIndex]:null;
+      const a=aIndex>=0?stats.assists[aIndex]:null;
+      const topGoal=stats.goals[0]||{value:0,name:'—'};
+      const topAssist=stats.assists[0]||{value:0,name:'—'};
+
+      rows.push({
+        player,
+        league,
+        team:g?.team||a?.team||resolved.teamName||player.sub||'',
+        goals:g?Number(g.value||0):0,
+        goalRank:g?.rank||(gIndex>=0?gIndex+1:null),
+        topGoals:Number(topGoal.value||0),
+        topGoalName:topGoal.name||'—',
+        assists:a?Number(a.value||0):0,
+        assistRank:a?.rank||(aIndex>=0?aIndex+1:null),
+        topAssists:Number(topAssist.value||0),
+        topAssistName:topAssist.name||'—',
+        unavailable:false
+      });
     }
     return rows;
   }
@@ -10479,11 +10638,22 @@ document.addEventListener('DOMContentLoaded',()=>{
   function renderFollowedPlayerComparisons(rows){
     const el=document.getElementById('football-followed-player-comparison');if(!el)return;
     if(!rows.length){
-      el.innerHTML='<div class="life-dashboard-empty">Follow players and their league to compare their goals and assists with the league leaders.</div>';
+      el.innerHTML='<div class="life-dashboard-empty">Follow players to compare their goals and assists with the leaders in each player's current league.</div>';
       return;
     }
 
     el.innerHTML=rows.map(r=>{
+      if(r.unavailable){
+        return `<div class="football-player-compare-card">
+          <div class="football-player-compare-head">
+            <div class="football-player-compare-person">
+              <img src="${playerFace(r.player.id)}" alt="" onerror="this.style.visibility='hidden'">
+              <div><strong>${esc(r.player.name)}</strong><small>${esc(r.team)}</small></div>
+            </div>
+          </div>
+          <div class="life-dashboard-empty">League statistics are not available for this player's current competition.</div>
+        </div>`;
+      }
       const goalPct=r.topGoals>0?Math.min(100,(r.goals/r.topGoals)*100):0;
       const assistPct=r.topAssists>0?Math.min(100,(r.assists/r.topAssists)*100):0;
       return `<div class="football-player-compare-card">
@@ -10516,18 +10686,36 @@ document.addEventListener('DOMContentLoaded',()=>{
     return (prefs.following||[]).filter(x=>x.type==='league');
   }
 
-  function renderLeaderLeagueSelect(){
+  async function renderLeaderLeagueSelect(){
     const select=document.getElementById('football-leader-league-select');if(!select)return;
-    const leagues=[...followedLeagues()];
-    if(selection.type==='league'&&!leagues.some(x=>String(x.id)===String(selection.id))){
-      leagues.unshift({type:'league',id:selection.id,name:selection.name,sub:selection.sub});
+
+    const map=new Map();
+    for(const l of followedLeagues())map.set(String(l.id),l);
+
+    if(selection.type==='league')map.set(String(selection.id),{type:'league',id:selection.id,name:selection.name,sub:selection.sub});
+
+    const players=(prefs.following||[]).filter(x=>x.type==='player');
+    for(const p of players){
+      try{
+        const r=await resolvePlayerLeague(p);
+        if(r.league)map.set(String(r.league.id),r.league);
+      }catch(e){}
     }
+
+    const leagues=[...map.values()];
     if(!leagues.length){
-      select.innerHTML='<option value="">Select a league first</option>';
+      select.innerHTML='<option value="">No league available</option>';
       return;
     }
+
+    const current=select.value;
     select.innerHTML=leagues.map(x=>`<option value="${esc(x.id)}">${esc(x.name)}</option>`).join('');
-    const preferred=(selection.type==='league'&&leagues.some(x=>String(x.id)===String(selection.id)))?selection.id:leagues[0].id;
+
+    const preferred=
+      (current&&leagues.some(x=>String(x.id)===String(current)))?current:
+      (selection.type==='league'&&leagues.some(x=>String(x.id)===String(selection.id)))?selection.id:
+      leagues[0].id;
+
     select.value=String(preferred);
   }
 
@@ -10737,13 +10925,13 @@ document.addEventListener('DOMContentLoaded',()=>{
     renderMatchList('football-fixtures-list',list,0);
   }
 
-  window.glifeFootballTab=function(tab){
+  window.glifeFootballTab=async function(tab){
     activeTab=tab;
     document.querySelectorAll('.football-tabs button').forEach(b=>b.classList.toggle('active',b.dataset.footballTab===tab));
     document.querySelectorAll('.football-panel').forEach(p=>p.classList.toggle('active',p.id===`football-panel-${tab}`));
     if(tab==='overview')setTimeout(()=>loadPersonalOverview(),20);
     if(tab==='leaders'){
-      renderLeaderLeagueSelect();
+      await renderLeaderLeagueSelect();
       const sel=document.getElementById('football-leader-league-select');
       if(sel?.value)setTimeout(()=>loadFullLeaderTables(sel.value),20);
     }
