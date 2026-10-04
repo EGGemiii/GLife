@@ -9675,7 +9675,11 @@ document.addEventListener('DOMContentLoaded',()=>{
       cache:'no-store',
       headers:{apikey:SB_KEY,Authorization:`Bearer ${SB_KEY}`}
     });
-    if(!r.ok)throw new Error(`Football API ${mode} failed (${r.status})`);
+    if(!r.ok){
+      let detail='';
+      try{detail=await r.text()}catch(e){}
+      throw new Error(`Football API ${mode} failed (${r.status}) ${detail}`);
+    }
     return await r.json();
   }
   function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
@@ -9719,7 +9723,9 @@ document.addEventListener('DOMContentLoaded',()=>{
 
   function extractLeagueFixtures(data){
     const candidates=[
+      data?.fixtures?.allMatches,
       data?.fixtures?.allFixtures?.fixtures,
+      data?.fixtures?.allFixtures,
       data?.fixtures?.fixtures,
       data?.matches,
       data?.overview?.fixtures,
@@ -9779,7 +9785,7 @@ document.addEventListener('DOMContentLoaded',()=>{
   function renderMatchList(elId,list,limit){
     const el=document.getElementById(elId);if(!el)return;
     const rows=(limit?list.slice(0,limit):list);
-    if(!rows.length){el.innerHTML='<div class="life-dashboard-empty">No matches found for this selection.</div>';return}
+    if(!rows.length){el.innerHTML='<div class="life-dashboard-empty">No matches found for this selection. Try Refresh or another competition.</div>';return}
     el.innerHTML=rows.map(m=>{
       const live=m.started&&!m.finished&&!m.cancelled;
       const result=m.finished||m.started;
@@ -9958,21 +9964,42 @@ document.addEventListener('DOMContentLoaded',()=>{
     box.classList.add('active');box.innerHTML='<div class="life-dashboard-empty">Searching...</div>';
     try{
       const data=await api('search',{q});
-      const raw=data?.suggestions||data?.data||data;
+      const raw=data?.suggestions??data?.data??data;
       let list=[];
-      if(Array.isArray(raw))list=raw;
-      else if(raw&&typeof raw==='object'){
-        for(const v of Object.values(raw))if(Array.isArray(v))list.push(...v);
+
+      if(Array.isArray(raw)){
+        // Current /api/data/search/suggest often returns groups where each
+        // group has its own `suggestions` array.
+        for(const item of raw){
+          if(Array.isArray(item?.suggestions))list.push(...item.suggestions);
+          else list.push(item);
+        }
+      }else if(raw&&typeof raw==='object'){
+        // Full search returns type buckets such as squadMember/team/tournament.
+        for(const [bucket,v] of Object.entries(raw)){
+          if(!Array.isArray(v))continue;
+          for(const item of v){
+            list.push({
+              ...item,
+              type:item?.type || (bucket==='squadMember'||bucket==='player'||bucket==='players'?'player':
+                   bucket==='team'||bucket==='teams'?'team':
+                   bucket==='tournament'||bucket==='league'||bucket==='leagues'?'league':bucket)
+            });
+          }
+        }
       }
-      // FotMob suggestions may come grouped.
+
+      // One more flattening pass for nested suggestion groups.
       list=list.flatMap(x=>Array.isArray(x?.suggestions)?x.suggestions:[x]).filter(Boolean);
+
       const normalized=list.map(x=>({
-        type:x.type==='squadMember'?'player':(x.type||x.entityType||x.category||'').toLowerCase(),
-        id:x.id||x.teamId||x.leagueId,
+        type:x.type==='squadMember'?'player':String(x.type||x.entityType||x.category||'').toLowerCase(),
+        id:x.id||x.playerId||x.teamId||x.leagueId,
         name:x.name||x.localizedName||x.title,
-        sub:x.teamName||x.leagueName||x.country||x.ccode||''
+        sub:x.info||x.teamName||x.leagueName||x.country||x.ccode||''
       })).filter(x=>['player','team','league','tournament'].includes(x.type)&&x.id&&x.name)
         .map(x=>({...x,type:x.type==='tournament'?'league':x.type}))
+        .filter((x,i,a)=>a.findIndex(y=>y.type===x.type&&String(y.id)===String(x.id))===i)
         .slice(0,12);
       box.innerHTML=normalized.length?normalized.map(x=>`<div class="football-search-result" onclick="glifeFootballSelect('${esc(x.type)}','${esc(x.id)}','${esc(x.name)}','${esc(x.sub)}')"><img src="${entityLogo(x.type,x.id)}" onerror="this.style.display='none'"><div><strong>${esc(x.name)}</strong><small>${esc(x.type)}${x.sub?' · '+esc(x.sub):''}</small></div></div>`).join(''):'<div class="life-dashboard-empty">No football results found.</div>';
     }catch(e){box.innerHTML='<div class="life-dashboard-empty">Search unavailable. Check the football Edge Function.</div>'}
