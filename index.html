@@ -2000,6 +2000,47 @@
 .life-shell.dark-mode .itinerary-summary>div{background:#111827!important}
 
 
+
+/* GLife Football v67 */
+.football-page{max-width:1600px;margin:0 auto;padding-bottom:40px}
+.football-head{display:flex;justify-content:space-between;gap:16px;align-items:flex-start;margin-bottom:18px}
+.football-head h1{margin:0;font-size:30px}.football-head p{margin:5px 0 0;color:var(--life-muted);font-size:12px}
+.football-searchbar{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:12px}
+.football-searchbox{display:flex;gap:7px;min-width:min(100%,460px);flex:1}
+.football-searchbox input{flex:1;min-width:0;border:1px solid var(--life-border);background:var(--life-card);color:var(--life-text);border-radius:10px;padding:11px 12px;font:inherit}
+.football-searchbox button,.football-quick-leagues button,.football-tabs button,.football-fixture-filters button,.football-news-filter button{border:1px solid var(--life-border);background:var(--life-card);color:var(--life-text);border-radius:9px;padding:8px 10px;font-size:10px;font-weight:800;cursor:pointer}
+.football-searchbox button,.football-tabs button.active,.football-fixture-filters button.active,.football-news-filter button.active{background:#6d28d9;color:#fff;border-color:#6d28d9}
+.football-quick-leagues{display:flex;gap:6px;flex-wrap:wrap}
+.football-quick-leagues button:hover{border-color:#8b5cf6}
+.football-search-results{display:none;margin:0 0 14px;border:1px solid var(--life-border);background:var(--life-card);border-radius:12px;padding:8px;box-shadow:var(--shadow)}
+.football-search-results.active{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:7px}
+.football-search-result{display:flex;align-items:center;gap:9px;border:1px solid var(--life-border);border-radius:9px;padding:9px;cursor:pointer;background:var(--life-card-soft)}
+.football-search-result:hover{border-color:#8b5cf6}
+.football-search-result img{width:30px;height:30px;object-fit:contain}.football-search-result strong{font-size:11px}.football-search-result small{display:block;color:var(--life-muted);font-size:9px;margin-top:2px}
+.football-tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+.football-selection-banner{display:flex;justify-content:space-between;gap:15px;align-items:center;background:linear-gradient(135deg,rgba(109,40,217,.13),rgba(59,130,246,.08));border:1px solid rgba(109,40,217,.28);border-radius:13px;padding:13px 15px;margin-bottom:14px}
+.football-selection-banner>div{min-width:0}.football-selection-type{display:block;text-transform:uppercase;font-size:8px;letter-spacing:.08em;color:#8b5cf6;font-weight:900}.football-selection-banner strong{display:block;font-size:17px;margin:3px 0}.football-selection-banner small{display:block;color:var(--life-muted);font-size:10px}
+.football-selection-banner button{border:1px solid #8b5cf6;background:transparent;color:#8b5cf6;border-radius:9px;padding:8px 12px;font-weight:800;cursor:pointer}.football-selection-banner button.following{background:#7c3aed;color:white}
+.football-panel{display:none}.football-panel.active{display:block}
+.football-kpi-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-bottom:12px}
+.football-kpi span{display:block;font-size:9px;text-transform:uppercase;color:var(--life-muted);font-weight:800}.football-kpi strong{display:block;font-size:16px;margin:7px 0 3px}.football-kpi small{font-size:9px;color:var(--life-muted)}
+.football-main-grid{grid-template-columns:1.25fr .75fr;margin-bottom:12px}
+.football-match-list{display:flex;flex-direction:column;gap:7px}
+.football-match{display:grid;grid-template-columns:100px 1fr auto;gap:10px;align-items:center;padding:10px;border:1px solid var(--life-border);border-radius:10px;background:var(--life-card-soft)}
+.football-match-time{font-size:9px;color:var(--life-muted)}.football-match-teams{font-size:11px;font-weight:750}.football-match-teams span{display:block;padding:2px 0}.football-match-score{font-size:13px;font-weight:900;white-space:nowrap}.football-match.live{border-color:#ef4444}.football-live-badge{font-size:8px;padding:2px 5px;background:#ef4444;color:#fff;border-radius:999px;margin-left:5px}
+.football-leader-preview{display:grid;grid-template-columns:1fr 1fr;gap:14px}.football-leader-preview h3{font-size:10px;margin:0 0 6px;color:var(--life-muted);text-transform:uppercase}
+.football-mini-leader,.football-leader-row{display:grid;grid-template-columns:28px 1fr auto auto;gap:8px;align-items:center;padding:7px 5px;border-bottom:1px solid var(--life-border)}
+.football-leader-row{grid-template-columns:34px 1fr auto auto;padding:10px 5px}.football-leader-row:last-child,.football-mini-leader:last-child{border-bottom:0}
+.football-rank{font-size:10px;color:var(--life-muted)}.football-player-name{font-size:11px;font-weight:800}.football-player-team{font-size:9px;color:var(--life-muted)}.football-stat{font-size:13px;font-weight:900}.football-star-btn{border:0;background:transparent;color:#a1a1aa;cursor:pointer;font-size:15px}.football-star-btn.followed{color:#f59e0b}.football-leader-row.followed{background:rgba(245,158,11,.08);border-radius:8px}
+.football-news-card{margin-top:12px}.football-news-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.football-news-item{border:1px solid var(--life-border);border-radius:11px;overflow:hidden;background:var(--life-card-soft);cursor:pointer}.football-news-item img{width:100%;aspect-ratio:16/8;object-fit:cover;background:#111827}.football-news-copy{padding:10px}.football-news-copy strong{display:block;font-size:11px;line-height:1.35}.football-news-copy small{display:block;margin-top:6px;color:var(--life-muted);font-size:9px}.football-news-item.followed{border-color:#f59e0b;box-shadow:0 0 0 1px rgba(245,158,11,.16)}
+.football-leaders-grid,.football-follow-grid{grid-template-columns:1fr 1fr}.football-panel-tools{display:flex;justify-content:space-between;gap:12px;align-items:center;margin-bottom:13px}.football-panel-tools h2{margin:0}.football-panel-tools p{margin:4px 0 0;color:var(--life-muted);font-size:10px}.football-fixture-filters,.football-news-filter{display:flex;gap:6px}
+.football-following-list{display:flex;flex-direction:column;gap:7px}.football-follow-item{display:flex;justify-content:space-between;gap:10px;align-items:center;border:1px solid var(--life-border);border-radius:9px;padding:9px;background:var(--life-card-soft)}.football-follow-item strong{font-size:11px}.football-follow-item small{display:block;font-size:9px;color:var(--life-muted)}.football-follow-item button{border:0;background:transparent;color:#ef4444;cursor:pointer;font-weight:800}
+.football-tip-list{display:flex;flex-direction:column;gap:9px}.football-tip-list>div{padding:9px;border:1px solid var(--life-border);border-radius:9px;background:var(--life-card-soft)}.football-tip-list strong,.football-tip-list span{display:block}.football-tip-list strong{font-size:10px}.football-tip-list span{font-size:9px;color:var(--life-muted);margin-top:4px}
+.football-source-label{font-size:9px;color:var(--life-muted)}.football-footer-note{font-size:9px;color:var(--life-muted);margin-top:12px;text-align:center}
+@media(max-width:1100px){.football-kpi-grid{grid-template-columns:repeat(2,1fr)}.football-main-grid,.football-leaders-grid,.football-follow-grid{grid-template-columns:1fr}.football-news-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:700px){.football-kpi-grid{grid-template-columns:1fr 1fr}.football-news-grid{grid-template-columns:1fr}.football-match{grid-template-columns:80px 1fr auto}.football-leader-preview{grid-template-columns:1fr}.football-panel-tools{align-items:flex-start;flex-direction:column}.football-searchbar{align-items:stretch}.football-quick-leagues{width:100%}}
+
 /* Embedded Finishing Apartment page */
 .embedded-app-page{height:calc(100vh - 28px);display:flex;flex-direction:column;gap:12px;padding:0}
 .embedded-app-toolbar{display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap}
@@ -3237,6 +3278,7 @@ window.lifeExchangeTab=function(tab){
       <a href="#tasks" data-page="tasks">✓ <span>Tasks</span></a>
       <a href="#money" data-page="money">₿ <span>Money</span></a>
       <a href="#currency" data-page="currency">⇄ <span>Currency</span></a>
+      <a href="#football" data-page="football">⚽ <span>Football</span></a>
       <a href="#finishing-apt" data-page="finishing-apt">🏠 <span>Finishing Apt.</span></a>
       <a href="#settings" data-page="settings">⚙ <span>Settings</span></a>
     </nav>
@@ -6929,6 +6971,148 @@ window.addEventListener('DOMContentLoaded', async () => {
       </div>
     </section>
 
+
+    <section id="page-football" class="life-page">
+      <div class="football-page">
+        <div class="football-head">
+          <div>
+            <h1>Football</h1>
+            <p>Fixtures, news, league leaders and the teams and players you follow.</p>
+          </div>
+          <div class="football-head-actions">
+            <button class="pill-btn" onclick="glifeFootballRefresh()">↻ Refresh</button>
+          </div>
+        </div>
+
+        <div class="football-searchbar">
+          <div class="football-searchbox">
+            <input id="football-search-input" placeholder="Search league, club, national team or player..." autocomplete="off" onkeydown="if(event.key==='Enter')glifeFootballSearch()">
+            <button onclick="glifeFootballSearch()">Search</button>
+          </div>
+          <div class="football-quick-leagues" id="football-quick-leagues">
+            <button data-league-id="47" data-league-name="Premier League">Premier League</button>
+            <button data-league-id="87" data-league-name="LaLiga">LaLiga</button>
+            <button data-league-id="55" data-league-name="Serie A">Serie A</button>
+            <button data-league-id="54" data-league-name="Bundesliga">Bundesliga</button>
+            <button data-league-id="53" data-league-name="Ligue 1">Ligue 1</button>
+            <button data-league-id="42" data-league-name="Champions League">Champions League</button>
+          </div>
+        </div>
+
+        <div id="football-search-results" class="football-search-results"></div>
+
+        <div class="football-tabs">
+          <button class="active" data-football-tab="overview" onclick="glifeFootballTab('overview')">Overview</button>
+          <button data-football-tab="fixtures" onclick="glifeFootballTab('fixtures')">Fixtures</button>
+          <button data-football-tab="leaders" onclick="glifeFootballTab('leaders')">Top Scorers & Assists</button>
+          <button data-football-tab="news" onclick="glifeFootballTab('news')">News</button>
+          <button data-football-tab="following" onclick="glifeFootballTab('following')">Following</button>
+        </div>
+
+        <div id="football-selection-banner" class="football-selection-banner">
+          <div>
+            <span class="football-selection-type">League</span>
+            <strong id="football-selection-name">Premier League</strong>
+            <small id="football-selection-sub">Choose a league, club, national team or player above.</small>
+          </div>
+          <button id="football-follow-selection" onclick="glifeFootballToggleSelectionFollow()">☆ Follow</button>
+        </div>
+
+        <div id="football-panel-overview" class="football-panel active">
+          <div class="football-kpi-grid">
+            <div class="life-card football-kpi"><span>Next match</span><strong id="football-next-match">Loading...</strong><small id="football-next-match-time"></small></div>
+            <div class="life-card football-kpi"><span>Competition</span><strong id="football-current-competition">Premier League</strong><small id="football-season"></small></div>
+            <div class="life-card football-kpi"><span>Following</span><strong id="football-follow-count">0</strong><small>players, teams & leagues</small></div>
+            <div class="life-card football-kpi"><span>Live now</span><strong id="football-live-count">0</strong><small>selected view</small></div>
+          </div>
+
+          <div class="grid football-main-grid">
+            <div class="life-card">
+              <div class="card-header"><div><h2>Upcoming matches</h2><div class="dash-card-subtitle">Next fixtures for your selection</div></div><span class="link" onclick="glifeFootballTab('fixtures')">See all</span></div>
+              <div id="football-overview-fixtures" class="football-match-list"><div class="life-dashboard-empty">Loading fixtures...</div></div>
+            </div>
+            <div class="life-card">
+              <div class="card-header"><div><h2>League leaders</h2><div class="dash-card-subtitle">Goals and assists</div></div><span class="link" onclick="glifeFootballTab('leaders')">Full table</span></div>
+              <div class="football-leader-preview">
+                <div><h3>Top scorers</h3><div id="football-overview-scorers"></div></div>
+                <div><h3>Top assists</h3><div id="football-overview-assists"></div></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="life-card football-news-card">
+            <div class="card-header"><div><h2>Latest football news</h2><div class="dash-card-subtitle">Followed names are prioritized</div></div><span class="link" onclick="glifeFootballTab('news')">More news</span></div>
+            <div id="football-overview-news" class="football-news-grid"><div class="life-dashboard-empty">Loading news...</div></div>
+          </div>
+        </div>
+
+        <div id="football-panel-fixtures" class="football-panel">
+          <div class="life-card">
+            <div class="football-panel-tools">
+              <div>
+                <h2>Fixtures & results</h2>
+                <p>Times are shown in your browser's local timezone.</p>
+              </div>
+              <div class="football-fixture-filters">
+                <button class="active" data-football-fixture-filter="upcoming" onclick="glifeFootballFixtureFilter('upcoming')">Upcoming</button>
+                <button data-football-fixture-filter="all" onclick="glifeFootballFixtureFilter('all')">All</button>
+                <button data-football-fixture-filter="results" onclick="glifeFootballFixtureFilter('results')">Results</button>
+              </div>
+            </div>
+            <div id="football-fixtures-list" class="football-match-list"></div>
+          </div>
+        </div>
+
+        <div id="football-panel-leaders" class="football-panel">
+          <div class="grid football-leaders-grid">
+            <div class="life-card">
+              <div class="card-header"><h2>Top scorers</h2><span class="football-source-label">Current season</span></div>
+              <div id="football-scorers-list" class="football-leader-list"></div>
+            </div>
+            <div class="life-card">
+              <div class="card-header"><h2>Top assists</h2><span class="football-source-label">Current season</span></div>
+              <div id="football-assists-list" class="football-leader-list"></div>
+            </div>
+          </div>
+        </div>
+
+        <div id="football-panel-news" class="football-panel">
+          <div class="life-card">
+            <div class="football-panel-tools">
+              <div><h2>Football news</h2><p>Stories matching followed clubs and players are highlighted.</p></div>
+              <div class="football-news-filter">
+                <button class="active" onclick="glifeFootballNewsFilter('all',this)">All</button>
+                <button onclick="glifeFootballNewsFilter('following',this)">Following</button>
+              </div>
+            </div>
+            <div id="football-news-list" class="football-news-grid"></div>
+          </div>
+        </div>
+
+        <div id="football-panel-following" class="football-panel">
+          <div class="grid football-follow-grid">
+            <div class="life-card">
+              <div class="card-header"><h2>Following</h2><span class="football-source-label">Synced with Supabase</span></div>
+              <div id="football-following-list" class="football-following-list"></div>
+            </div>
+            <div class="life-card">
+              <div class="card-header"><h2>Quick notes</h2></div>
+              <div class="football-tip-list">
+                <div><strong>⭐ Highlighted players</strong><span>Players you follow are highlighted in scorer and assist tables.</span></div>
+                <div><strong>📅 Match planning</strong><span>Use upcoming fixtures to plan your week. Kickoff times use your local timezone.</span></div>
+                <div><strong>📰 Personalized news</strong><span>News mentioning your followed clubs or players is shown first.</span></div>
+                <div><strong>🌍 National teams</strong><span>Search for Egypt, Saudi Arabia, Argentina, France or any other national team.</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="football-footer-note">
+          Football data is fetched through your Supabase Edge Function. Upstream football data is provided by FotMob public web endpoints.
+        </div>
+      </div>
+    </section>
+
     <section id="page-finishing-apt" class="life-page finishing-apt-full-page">
       <div class="embedded-app-page embedded-app-page-full">
         <div class="embedded-app-shell embedded-app-shell-full">
@@ -9054,7 +9238,8 @@ document.addEventListener('DOMContentLoaded',()=>{
     calendar:'lifeos-calendar-events-v2',
     itinerary:'lifeos-itinerary-v1',
     itineraryMeta:'lifeos-itinerary-meta',
-    vacation:'lifeos-vacation-v1'
+    vacation:'lifeos-vacation-v1',
+    football:'glife-football-v1'
   };
 
   const state={ready:false,loading:false,saving:new Set(),lastCloud:{},hydratedAt:0};
@@ -9166,6 +9351,9 @@ document.addEventListener('DOMContentLoaded',()=>{
         }else if(typeof lifeTasksRender==='function'){
           lifeTasksRender();
         }
+      }
+      if(name==='football'){
+        if(typeof window.glifeFootballReloadFromStorage==='function')window.glifeFootballReloadFromStorage();
       }
     }catch(e){console.warn(`LifeOS ${name} refresh failed`,e)}
   }
@@ -9450,6 +9638,368 @@ document.addEventListener('DOMContentLoaded',()=>{
 .market-refresh-btn{font-size:11px!important;padding:5px 8px!important}
 .life-shell.dark-mode .market-auto-badge{color:#86efac;background:rgba(34,197,94,.15)}
 </style>
+<script id="glife-football-v67">
+(function(){
+  const KEY='glife-football-v1';
+  const FN='https://lysitupenffmkryvxxli.supabase.co/functions/v1/football';
+  const SB_KEY='sb_publishable_vN_JscG4odGCUaVgr_OIQw_aDKkzyA7';
+
+  let prefs=loadPrefs();
+  let selection=prefs.lastSelection||{type:'league',id:47,name:'Premier League',sub:'England'};
+  let leagueData=null, teamData=null, playerData=null, newsData=[], fixtures=[], scorers=[], assists=[];
+  let activeTab='overview', fixtureFilter='upcoming', newsFilter='all', loading=false;
+
+  function loadPrefs(){
+    try{
+      const x=JSON.parse(localStorage.getItem(KEY)||'null');
+      return x&&typeof x==='object'?x:{following:[],lastSelection:null};
+    }catch(e){return {following:[],lastSelection:null}}
+  }
+  function savePrefs(){
+    prefs.lastSelection=selection;
+    localStorage.setItem(KEY,JSON.stringify(prefs));
+    setTimeout(()=>{try{window.lifeOSSaveModuleNow?.('football')}catch(e){}},50);
+  }
+  window.glifeFootballReloadFromStorage=function(){
+    prefs=loadPrefs();
+    if(prefs.lastSelection)selection=prefs.lastSelection;
+    renderFollowing();
+    updateFollowButton();
+  };
+
+  async function api(mode,params={}){
+    const u=new URL(FN);
+    u.searchParams.set('mode',mode);
+    Object.entries(params).forEach(([k,v])=>{if(v!==undefined&&v!==null&&v!=='')u.searchParams.set(k,String(v))});
+    const r=await fetch(u.toString(),{
+      cache:'no-store',
+      headers:{apikey:SB_KEY,Authorization:`Bearer ${SB_KEY}`}
+    });
+    if(!r.ok)throw new Error(`Football API ${mode} failed (${r.status})`);
+    return await r.json();
+  }
+  function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+  function followed(type,id){return (prefs.following||[]).some(x=>x.type===type&&String(x.id)===String(id))}
+  function followedTerms(){return (prefs.following||[]).map(x=>(x.name||'').toLowerCase()).filter(Boolean)}
+  function entityLogo(type,id){
+    if(type==='player')return `https://images.fotmob.com/image_resources/playerimages/${id}.png`;
+    if(type==='team')return `https://images.fotmob.com/image_resources/logo/teamlogo/${id}.png`;
+    if(type==='league')return `https://images.fotmob.com/image_resources/logo/leaguelogo/${id}.png`;
+    return '';
+  }
+  function localDate(utc){
+    if(!utc)return '';
+    const d=new Date(utc);
+    if(Number.isNaN(d.getTime()))return '';
+    return d.toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'});
+  }
+  function localTime(utc){
+    if(!utc)return '';
+    const d=new Date(utc);
+    if(Number.isNaN(d.getTime()))return '';
+    return d.toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'});
+  }
+
+  function normalizeMatch(m){
+    const st=m.status||{};
+    return {
+      id:m.id||m.matchId,
+      utc:st.utcTime||m.utcTime||m.matchDate||m.time,
+      home:m.home?.name||m.home?.longName||m.homeTeam?.name||'Home',
+      away:m.away?.name||m.away?.longName||m.awayTeam?.name||'Away',
+      hs:m.home?.score??m.homeScore??'',
+      as:m.away?.score??m.awayScore??'',
+      started:!!st.started,
+      finished:!!st.finished,
+      cancelled:!!st.cancelled,
+      score:st.scoreStr||((m.home?.score!==undefined&&m.away?.score!==undefined)?`${m.home.score} - ${m.away.score}`:''),
+      league:m.leagueName||m.tournamentName||''
+    };
+  }
+
+  function extractLeagueFixtures(data){
+    const candidates=[
+      data?.fixtures?.allFixtures?.fixtures,
+      data?.fixtures?.fixtures,
+      data?.matches,
+      data?.overview?.fixtures,
+      data?.content?.matches
+    ];
+    for(const c of candidates)if(Array.isArray(c))return c.map(normalizeMatch);
+    return [];
+  }
+  function extractTeamFixtures(data){
+    const candidates=[
+      data?.fixtures?.allFixtures?.fixtures,
+      data?.fixtures?.fixtures,
+      data?.fixtures,
+      data?.overview?.fixtures,
+      data?.matches
+    ];
+    for(const c of candidates)if(Array.isArray(c))return c.map(normalizeMatch);
+    return [];
+  }
+  function statRowsFromLeague(data,kind){
+    const blocks=data?.stats?.players||data?.stats?.playerStats||[];
+    if(!Array.isArray(blocks))return [];
+    const want=kind==='goals'?['top scorer','goals','goal']:['assists','top assists','assist'];
+    for(const b of blocks){
+      const h=String(b?.header||b?.title||b?.name||'').toLowerCase();
+      if(want.some(x=>h.includes(x))){
+        const rows=b?.topThree||b?.players||b?.items||b?.participants||b?.stats||[];
+        if(Array.isArray(rows))return rows.map((r,i)=>normalizeLeader(r,i+1,kind));
+      }
+    }
+    return [];
+  }
+  function normalizeLeader(r,rank,kind){
+    const p=r.participant||r.player||r;
+    return {
+      rank:r.rank||rank,
+      id:p.id||p.playerId||r.id,
+      name:p.name||p.playerName||r.name||'Player',
+      team:p.teamName||p.team?.name||r.teamName||r.team?.name||'',
+      value:Number(r.value??r.statValue??r.goals??r.assists??p.value??0),
+      kind
+    };
+  }
+
+  async function deepStats(kind){
+    if(selection.type!=='league')return [];
+    try{
+      const seasonId=leagueData?.seasons?.[0]?.id||leagueData?.seasonId||leagueData?.details?.selectedSeasonId||'';
+      const stat=kind==='goals'?'goals':'goal_assist';
+      const x=await api('deepstats',{id:selection.id,season:seasonId,stat});
+      const rows=x?.statsData||x?.data||x?.players||x?.items||[];
+      if(Array.isArray(rows))return rows.map((r,i)=>normalizeLeader(r,i+1,kind));
+    }catch(e){}
+    return [];
+  }
+
+  function renderMatchList(elId,list,limit){
+    const el=document.getElementById(elId);if(!el)return;
+    const rows=(limit?list.slice(0,limit):list);
+    if(!rows.length){el.innerHTML='<div class="life-dashboard-empty">No matches found for this selection.</div>';return}
+    el.innerHTML=rows.map(m=>{
+      const live=m.started&&!m.finished&&!m.cancelled;
+      const result=m.finished||m.started;
+      return `<div class="football-match ${live?'live':''}">
+        <div class="football-match-time">${esc(localDate(m.utc))}<br>${esc(localTime(m.utc))}${live?'<span class="football-live-badge">LIVE</span>':''}</div>
+        <div class="football-match-teams"><span>${esc(m.home)}</span><span>${esc(m.away)}</span></div>
+        <div class="football-match-score">${result?esc(m.score||`${m.hs} - ${m.as}`):'vs'}</div>
+      </div>`;
+    }).join('');
+  }
+
+  function renderLeaderRows(elId,rows,limit=0){
+    const el=document.getElementById(elId);if(!el)return;
+    const list=limit?rows.slice(0,limit):rows;
+    if(!list.length){el.innerHTML='<div class="life-dashboard-empty">Leader data is available when a league is selected.</div>';return}
+    el.innerHTML=list.map((r,i)=>{
+      const isFollowed=followed('player',r.id);
+      const cls=limit?'football-mini-leader':'football-leader-row';
+      return `<div class="${cls} ${isFollowed?'followed':''}">
+        <span class="football-rank">${r.rank||i+1}</span>
+        <div><span class="football-player-name">${esc(r.name)}</span><span class="football-player-team">${esc(r.team)}</span></div>
+        <strong class="football-stat">${r.value}</strong>
+        <button class="football-star-btn ${isFollowed?'followed':''}" onclick="glifeFootballToggleFollow('player','${esc(r.id)}','${esc(r.name)}','${esc(r.team)}')">${isFollowed?'★':'☆'}</button>
+      </div>`;
+    }).join('');
+  }
+
+  function newsIsFollowed(n){
+    const title=String(n.title||'').toLowerCase();
+    return followedTerms().some(t=>t&&title.includes(t));
+  }
+  function newsUrl(n){
+    const u=n?.page?.url||n?.url||'';
+    if(!u)return '#';
+    return u.startsWith('http')?u:`https://www.fotmob.com${u}`;
+  }
+  function renderNews(elId,list,limit=0){
+    const el=document.getElementById(elId);if(!el)return;
+    let rows=[...list];
+    rows.sort((a,b)=>Number(newsIsFollowed(b))-Number(newsIsFollowed(a)));
+    if(newsFilter==='following')rows=rows.filter(newsIsFollowed);
+    if(limit)rows=rows.slice(0,limit);
+    if(!rows.length){el.innerHTML='<div class="life-dashboard-empty">No matching news right now.</div>';return}
+    el.innerHTML=rows.map(n=>`<article class="football-news-item ${newsIsFollowed(n)?'followed':''}" onclick="window.open('${esc(newsUrl(n))}','_blank','noopener')">
+      ${n.imageUrl?`<img loading="lazy" src="${esc(n.imageUrl)}" alt="">`:''}
+      <div class="football-news-copy"><strong>${esc(n.title||'Football news')}</strong><small>${esc(n.sourceStr||'Football')} ${n.gmtTime?'· '+esc(localDate(n.gmtTime)):''}</small></div>
+    </article>`).join('');
+  }
+
+  function updateSelectionUI(){
+    const name=document.getElementById('football-selection-name');
+    const sub=document.getElementById('football-selection-sub');
+    const type=document.querySelector('.football-selection-type');
+    if(name)name.textContent=selection.name||'Football';
+    if(sub)sub.textContent=selection.sub||'';
+    if(type)type.textContent=selection.type==='team'?'Club / National Team':selection.type[0].toUpperCase()+selection.type.slice(1);
+    const comp=document.getElementById('football-current-competition');
+    if(comp)comp.textContent=selection.type==='league'?selection.name:(selection.sub||'Across competitions');
+    updateFollowButton();
+  }
+  function updateFollowButton(){
+    const b=document.getElementById('football-follow-selection');if(!b)return;
+    const f=followed(selection.type,selection.id);
+    b.textContent=f?'★ Following':'☆ Follow';
+    b.classList.toggle('following',f);
+    const cnt=document.getElementById('football-follow-count');if(cnt)cnt.textContent=(prefs.following||[]).length;
+  }
+  function renderFollowing(){
+    const el=document.getElementById('football-following-list');if(!el)return;
+    const list=prefs.following||[];
+    if(!list.length){el.innerHTML='<div class="life-dashboard-empty">Nothing followed yet. Search and follow a league, team or player.</div>';return}
+    el.innerHTML=list.map(x=>`<div class="football-follow-item"><div><strong>${esc(x.name)}</strong><small>${esc(x.type)}${x.sub?' · '+esc(x.sub):''}</small></div><button onclick="glifeFootballUnfollow('${esc(x.type)}','${esc(x.id)}')">Remove</button></div>`).join('');
+  }
+
+  async function loadNews(){
+    try{
+      const n=await api('news',{page:1});
+      newsData=Array.isArray(n)?n:(n?.data||n?.news||[]);
+    }catch(e){newsData=[]}
+    renderNews('football-overview-news',newsData,6);
+    renderNews('football-news-list',newsData,0);
+  }
+
+  async function loadSelection(){
+    updateSelectionUI();
+    leagueData=teamData=playerData=null;fixtures=[];scorers=[];assists=[];
+    try{
+      if(selection.type==='league'){
+        leagueData=await api('league',{id:selection.id});
+        fixtures=extractLeagueFixtures(leagueData);
+        scorers=statRowsFromLeague(leagueData,'goals');
+        assists=statRowsFromLeague(leagueData,'assists');
+        if(!scorers.length)scorers=await deepStats('goals');
+        if(!assists.length)assists=await deepStats('assists');
+        const season=document.getElementById('football-season');
+        if(season)season.textContent=leagueData?.details?.selectedSeason||leagueData?.selectedSeason||'Current season';
+      }else if(selection.type==='team'){
+        teamData=await api('team',{id:selection.id});
+        fixtures=extractTeamFixtures(teamData);
+      }else if(selection.type==='player'){
+        playerData=await api('player',{id:selection.id});
+        const next=playerData?.nextMatch;
+        if(next)fixtures=[normalizeMatch(next)];
+        const recent=playerData?.recentMatches||playerData?.lastMatches||[];
+        if(Array.isArray(recent))fixtures.push(...recent.map(normalizeMatch));
+      }
+    }catch(e){
+      console.warn('GLife football selection load failed',e);
+    }
+
+    const now=Date.now();
+    const upcoming=fixtures.filter(m=>{
+      const t=new Date(m.utc).getTime();
+      return !m.finished && !m.cancelled && (!Number.isFinite(t)||t>=now-3*3600000);
+    }).sort((a,b)=>new Date(a.utc)-new Date(b.utc));
+    const live=fixtures.filter(m=>m.started&&!m.finished&&!m.cancelled);
+    const nm=upcoming[0]||fixtures.find(m=>!m.finished&&!m.cancelled);
+    const next=document.getElementById('football-next-match');if(next)next.textContent=nm?`${nm.home} vs ${nm.away}`:'No upcoming match';
+    const nextT=document.getElementById('football-next-match-time');if(nextT)nextT.textContent=nm?`${localDate(nm.utc)} · ${localTime(nm.utc)}`:'';
+    const liveEl=document.getElementById('football-live-count');if(liveEl)liveEl.textContent=live.length;
+
+    renderMatchList('football-overview-fixtures',upcoming.length?upcoming:fixtures,6);
+    renderFixtures();
+    renderLeaderRows('football-overview-scorers',scorers,5);
+    renderLeaderRows('football-overview-assists',assists,5);
+    renderLeaderRows('football-scorers-list',scorers,0);
+    renderLeaderRows('football-assists-list',assists,0);
+    renderFollowing();
+  }
+
+  function renderFixtures(){
+    let list=[...fixtures];
+    if(fixtureFilter==='upcoming')list=list.filter(m=>!m.finished&&!m.cancelled);
+    if(fixtureFilter==='results')list=list.filter(m=>m.finished);
+    list.sort((a,b)=>new Date(a.utc)-new Date(b.utc));
+    renderMatchList('football-fixtures-list',list,0);
+  }
+
+  window.glifeFootballTab=function(tab){
+    activeTab=tab;
+    document.querySelectorAll('.football-tabs button').forEach(b=>b.classList.toggle('active',b.dataset.footballTab===tab));
+    document.querySelectorAll('.football-panel').forEach(p=>p.classList.toggle('active',p.id===`football-panel-${tab}`));
+    if(tab==='news')renderNews('football-news-list',newsData,0);
+    if(tab==='following')renderFollowing();
+  };
+  window.glifeFootballFixtureFilter=function(filter){
+    fixtureFilter=filter;
+    document.querySelectorAll('[data-football-fixture-filter]').forEach(b=>b.classList.toggle('active',b.dataset.footballFixtureFilter===filter));
+    renderFixtures();
+  };
+  window.glifeFootballNewsFilter=function(filter,btn){
+    newsFilter=filter;
+    document.querySelectorAll('.football-news-filter button').forEach(b=>b.classList.remove('active'));
+    btn?.classList.add('active');
+    renderNews('football-news-list',newsData,0);
+  };
+  window.glifeFootballToggleFollow=function(type,id,name,sub=''){
+    const i=(prefs.following||[]).findIndex(x=>x.type===type&&String(x.id)===String(id));
+    if(i>=0)prefs.following.splice(i,1);
+    else prefs.following.push({type,id,name,sub});
+    savePrefs();updateFollowButton();renderFollowing();
+    renderLeaderRows('football-scorers-list',scorers,0);renderLeaderRows('football-assists-list',assists,0);
+    renderLeaderRows('football-overview-scorers',scorers,5);renderLeaderRows('football-overview-assists',assists,5);
+    renderNews('football-overview-news',newsData,6);renderNews('football-news-list',newsData,0);
+  };
+  window.glifeFootballToggleSelectionFollow=function(){glifeFootballToggleFollow(selection.type,selection.id,selection.name,selection.sub||'')};
+  window.glifeFootballUnfollow=function(type,id){
+    prefs.following=(prefs.following||[]).filter(x=>!(x.type===type&&String(x.id)===String(id)));
+    savePrefs();renderFollowing();updateFollowButton();
+  };
+
+  window.glifeFootballSearch=async function(){
+    const input=document.getElementById('football-search-input');
+    const q=(input?.value||'').trim();if(!q)return;
+    const box=document.getElementById('football-search-results');
+    box.classList.add('active');box.innerHTML='<div class="life-dashboard-empty">Searching...</div>';
+    try{
+      const data=await api('search',{q});
+      const raw=data?.suggestions||data?.data||data;
+      let list=[];
+      if(Array.isArray(raw))list=raw;
+      else if(raw&&typeof raw==='object'){
+        for(const v of Object.values(raw))if(Array.isArray(v))list.push(...v);
+      }
+      // FotMob suggestions may come grouped.
+      list=list.flatMap(x=>Array.isArray(x?.suggestions)?x.suggestions:[x]).filter(Boolean);
+      const normalized=list.map(x=>({
+        type:x.type==='squadMember'?'player':(x.type||x.entityType||x.category||'').toLowerCase(),
+        id:x.id||x.teamId||x.leagueId,
+        name:x.name||x.localizedName||x.title,
+        sub:x.teamName||x.leagueName||x.country||x.ccode||''
+      })).filter(x=>['player','team','league','tournament'].includes(x.type)&&x.id&&x.name)
+        .map(x=>({...x,type:x.type==='tournament'?'league':x.type}))
+        .slice(0,12);
+      box.innerHTML=normalized.length?normalized.map(x=>`<div class="football-search-result" onclick="glifeFootballSelect('${esc(x.type)}','${esc(x.id)}','${esc(x.name)}','${esc(x.sub)}')"><img src="${entityLogo(x.type,x.id)}" onerror="this.style.display='none'"><div><strong>${esc(x.name)}</strong><small>${esc(x.type)}${x.sub?' · '+esc(x.sub):''}</small></div></div>`).join(''):'<div class="life-dashboard-empty">No football results found.</div>';
+    }catch(e){box.innerHTML='<div class="life-dashboard-empty">Search unavailable. Check the football Edge Function.</div>'}
+  };
+
+  window.glifeFootballSelect=async function(type,id,name,sub=''){
+    selection={type,id,name,sub};
+    savePrefs();
+    document.getElementById('football-search-results')?.classList.remove('active');
+    const input=document.getElementById('football-search-input');if(input)input.value='';
+    await loadSelection();
+  };
+
+  window.glifeFootballRefresh=async function(){
+    if(loading)return;loading=true;
+    try{await Promise.all([loadSelection(),loadNews()]);if(typeof showToast==='function')showToast('Football updated')}
+    finally{loading=false}
+  };
+
+  document.addEventListener('DOMContentLoaded',()=>{
+    document.querySelectorAll('#football-quick-leagues button').forEach(b=>b.addEventListener('click',()=>glifeFootballSelect('league',b.dataset.leagueId,b.dataset.leagueName,'League')));
+    updateSelectionUI();renderFollowing();
+    setTimeout(()=>glifeFootballRefresh(),900);
+  });
+})();
+</script>
+
 <script id="glife-live-weather-v66">
 (function(){
   const CACHE_PREFIX='glife.weather.cache.';
