@@ -1418,6 +1418,21 @@
   }
 }
 
+
+/* GLife v78: birthday calendar type */
+.life-calendar .event-birthday,
+.calendar-event.birthday,
+.cal-event.birthday,
+[data-event-type="birthday"]{
+  border-left-color:#ec4899!important;
+}
+.life-calendar .event-birthday::before,
+.calendar-event.birthday::before,
+.cal-event.birthday::before{
+  content:"🎂";
+  margin-right:4px;
+}
+
 /* LifeOS Light / Dark mode */
 .life-theme-toggle{
   position:fixed;top:64px;left:16px;z-index:120;
@@ -2007,11 +2022,29 @@
 
 /* GLife Football v72 theme + personalized overview */
 
+/* GLife v78: Football tab strip theme fix */
+.football-tabs{
+  background:var(--fb-surface)!important;
+  border-bottom:1px solid var(--fb-border);
+}
+.life-shell.dark-mode .football-tabs{
+  background:var(--fb-surface)!important;
+}
+
+
 /* GLife Football v73 followed-player comparisons */
 
 /* GLife Football v74 leaderboard + followed-player fixes */
 
 /* GLife Football v76 */
+
+/* GLife Football v77 performance */
+#football-followed-player-comparison .life-dashboard-empty{
+  min-height:44px;
+  display:flex;
+  align-items:center;
+}
+
 .football-selection-compact{
   display:flex;justify-content:space-between;align-items:center;gap:12px;
   padding:8px 11px;margin-bottom:12px;border:1px solid var(--fb-border);
@@ -4156,6 +4189,7 @@ window.lifeExchangeTab=function(tab){
         <label>Calendar
           <select id="life-event-calendar">
             <option value="personal">Personal</option>
+              <option value="birthday">Birthday 🎂</option>
             <option value="work">Work</option>
             <option value="important">Important</option>
           </select>
@@ -4169,6 +4203,7 @@ window.lifeExchangeTab=function(tab){
             <option value="daily">Daily</option>
             <option value="weekly">Weekly</option>
             <option value="monthly">Monthly</option>
+              <option value="yearly">Yearly</option>
           </select>
         </label>
         <label class="full">Location<input id="life-event-location" type="text" placeholder="Optional location or meeting link"></label>
@@ -10112,6 +10147,12 @@ document.addEventListener('DOMContentLoaded',()=>{
   let leagueData=null, teamData=null, playerData=null, newsData=[], fixtures=[], scorers=[], assists=[], standings=[], teamForm=[];
   let activeTab='overview', fixtureFilter='upcoming', newsFilter='all', loading=false;
 
+  // v77 performance cache: avoid repeating the same player/team/league calls
+  // every time Overview or Leaders is opened.
+  const footballCache=new Map();
+  const footballPending=new Map();
+  const CACHE_TTL=10*60*1000;
+
   function loadPrefs(){
     try{
       const x=JSON.parse(localStorage.getItem(KEY)||'null');
@@ -10149,6 +10190,42 @@ document.addEventListener('DOMContentLoaded',()=>{
     }
     return await r.json();
   }
+
+  function cacheKey(mode,params={}){
+    const ordered=Object.entries(params).sort(([a],[b])=>a.localeCompare(b));
+    return mode+'|'+JSON.stringify(ordered);
+  }
+
+  async function apiCached(mode,params={},ttl=CACHE_TTL){
+    const key=cacheKey(mode,params);
+    const now=Date.now();
+    const cached=footballCache.get(key);
+    if(cached && now-cached.time<ttl)return cached.data;
+
+    // If another part of the page is already loading this exact request,
+    // reuse the same Promise instead of sending another network request.
+    if(footballPending.has(key))return footballPending.get(key);
+
+    const promise=api(mode,params)
+      .then(data=>{
+        footballCache.set(key,{time:Date.now(),data});
+        footballPending.delete(key);
+        return data;
+      })
+      .catch(err=>{
+        footballPending.delete(key);
+        throw err;
+      });
+
+    footballPending.set(key,promise);
+    return promise;
+  }
+
+  function clearFootballCache(){
+    footballCache.clear();
+    footballPending.clear();
+  }
+
   function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
   function followed(type,id){return (prefs.following||[]).some(x=>x.type===type&&String(x.id)===String(id))}
   function followedTerms(){return (prefs.following||[]).map(x=>(x.name||'').toLowerCase()).filter(Boolean)}
@@ -10487,32 +10564,37 @@ document.addEventListener('DOMContentLoaded',()=>{
   }
 
   async function getFollowedFixtures(){
-    const list=prefs.following||[];
+    const list=(prefs.following||[]).filter(f=>f.type!=='league');
     if(!list.length)return [];
-    const all=[];
-    const seen=new Set();
 
-    for(const f of list){
-      if(f.type==='league')continue;
+    const batches=await Promise.all(list.map(async f=>{
       try{
-        let rows=[];
         if(f.type==='team'){
-          const d=await api('team',{id:f.id});
-          rows=extractTeamFixtures(d);
-        }else if(f.type==='player'){
-          const p=await api('player',{id:f.id});
+          const d=await apiCached('team',{id:f.id});
+          return extractTeamFixtures(d);
+        }
+        if(f.type==='player'){
+          const p=await apiCached('player',{id:f.id});
           const teamId=p?.primaryTeam?.teamId||p?.primaryTeam?.id;
           if(teamId){
-            const d=await api('team',{id:teamId});
-            rows=extractTeamFixtures(d);
+            const d=await apiCached('team',{id:teamId});
+            return extractTeamFixtures(d);
           }
         }
-        for(const m of rows){
-          const key=String(m.id||`${m.utc}|${m.home}|${m.away}`);
-          if(seen.has(key))continue;
-          seen.add(key);all.push(m);
-        }
-      }catch(e){console.warn('Followed fixture load failed',f,e)}
+      }catch(e){
+        console.warn('Followed fixture load failed',f,e);
+      }
+      return [];
+    }));
+
+    const all=[],seen=new Set();
+    for(const rows of batches){
+      for(const m of rows){
+        const key=String(m.id||`${m.utc}|${m.home}|${m.away}`);
+        if(seen.has(key))continue;
+        seen.add(key);
+        all.push(m);
+      }
     }
 
     const now=Date.now();
@@ -10559,14 +10641,14 @@ document.addEventListener('DOMContentLoaded',()=>{
 
   async function resolvePlayerLeague(playerFollow){
     try{
-      const p=await api('player',{id:playerFollow.id});
+      const p=await apiCached('player',{id:playerFollow.id});
       const primary=p?.primaryTeam||{};
       const teamId=primary.teamId||primary.id;
       const teamName=primary.teamName||primary.name||playerFollow.sub||'';
 
       if(!teamId)return {playerData:p,teamData:null,league:null,teamName};
 
-      const t=await api('team',{id:teamId});
+      const t=await apiCached('team',{id:teamId});
       const league=extractPrimaryLeagueFromTeam(t);
 
       return {playerData:p,teamData:t,league,teamName};
@@ -10578,7 +10660,7 @@ document.addEventListener('DOMContentLoaded',()=>{
 
   async function getLeagueFullStats(league){
     try{
-      const d=await api('league',{id:league.id});
+      const d=await apiCached('league',{id:league.id});
       const seasonName=d?.details?.selectedSeason||d?.selectedSeason||d?.seasons?.[0]?.name||d?.seasons?.[0]?.id||'';
 
       const parseDeepRows=(x,kind)=>{
@@ -10590,14 +10672,18 @@ document.addEventListener('DOMContentLoaded',()=>{
       };
 
       const loadStat=async(stat,kind)=>{
-        const x=await api('deepstats',{id:league.id,season:seasonName,stat});
+        const x=await apiCached('deepstats',{id:league.id,season:seasonName,stat});
         return parseDeepRows(x,kind);
       };
 
       const previewGoals=statRowsFromLeague(d,'goals');
       const previewAssists=statRowsFromLeague(d,'assists');
-      const deepGoals=await loadStat('goals','goals').catch(()=>[]);
-      const deepAssists=await loadStat('goal_assist','assists').catch(()=>[]);
+
+      // Goals and assists are independent, so load them at the same time.
+      const [deepGoals,deepAssists]=await Promise.all([
+        loadStat('goals','goals').catch(()=>[]),
+        loadStat('goal_assist','assists').catch(()=>[])
+      ]);
 
       const goals=deepGoals.length>previewGoals.length?deepGoals:previewGoals;
       const assists=deepAssists.length>previewAssists.length?deepAssists:previewAssists;
@@ -10613,30 +10699,37 @@ document.addEventListener('DOMContentLoaded',()=>{
     const players=(prefs.following||[]).filter(x=>x.type==='player');
     if(!players.length)return [];
 
-    const leagueCache=new Map();
-    const rows=[];
+    // Resolve every player's club/league in parallel instead of one by one.
+    const resolvedPlayers=await Promise.all(players.map(async player=>({
+      player,
+      resolved:await resolvePlayerLeague(player)
+    })));
 
-    for(const player of players){
-      const resolved=await resolvePlayerLeague(player);
-      const league=resolved.league;
+    // Load each unique league only once, also in parallel.
+    const leagueMap=new Map();
+    for(const item of resolvedPlayers){
+      const league=item.resolved?.league;
+      if(league)leagueMap.set(String(league.id),league);
+    }
+
+    const leagueStats=new Map();
+    await Promise.all([...leagueMap.entries()].map(async([key,league])=>{
+      leagueStats.set(key,await getLeagueFullStats(league));
+    }));
+
+    return resolvedPlayers.map(({player,resolved})=>{
+      const league=resolved?.league;
 
       if(!league){
-        rows.push({
-          player,league:null,team:resolved.teamName||player.sub||'',
+        return {
+          player,league:null,team:resolved?.teamName||player.sub||'',
           goals:null,goalRank:null,topGoals:null,topGoalName:'—',
           assists:null,assistRank:null,topAssists:null,topAssistName:'—',
           unavailable:true
-        });
-        continue;
+        };
       }
 
-      const leagueKey=String(league.id);
-      let stats=leagueCache.get(leagueKey);
-      if(!stats){
-        stats=await getLeagueFullStats(league);
-        leagueCache.set(leagueKey,stats);
-      }
-
+      const stats=leagueStats.get(String(league.id))||{goals:[],assists:[]};
       const gIndex=stats.goals.findIndex(r=>String(r.id)===String(player.id));
       const aIndex=stats.assists.findIndex(r=>String(r.id)===String(player.id));
 
@@ -10645,10 +10738,10 @@ document.addEventListener('DOMContentLoaded',()=>{
       const topGoal=stats.goals[0]||{value:0,name:'—'};
       const topAssist=stats.assists[0]||{value:0,name:'—'};
 
-      rows.push({
+      return {
         player,
         league,
-        team:g?.team||a?.team||resolved.teamName||player.sub||'',
+        team:g?.team||a?.team||resolved?.teamName||player.sub||'',
         goals:g?Number(g.value||0):0,
         goalRank:g?.rank||(gIndex>=0?gIndex+1:null),
         topGoals:Number(topGoal.value||0),
@@ -10658,9 +10751,8 @@ document.addEventListener('DOMContentLoaded',()=>{
         topAssists:Number(topAssist.value||0),
         topAssistName:topAssist.name||'—',
         unavailable:false
-      });
-    }
-    return rows;
+      };
+    });
   }
 
   function renderFollowedPlayerComparisons(rows){
@@ -10814,29 +10906,38 @@ document.addEventListener('DOMContentLoaded',()=>{
       return;
     }
 
-    const followedFixtures=await getFollowedFixtures();
-    renderMatchList('football-overview-fixtures',followedFixtures,8);
+    const compareEl=document.getElementById('football-followed-player-comparison');
+    if(compareEl)compareEl.innerHTML='<div class="life-dashboard-empty">Loading followed player stats...</div>';
 
-    const now=Date.now(),weekEnd=now+7*86400000;
-    const next=followedFixtures.find(m=>!m.finished&&!m.cancelled);
-    const nextEl=document.getElementById('football-following-next-match');
-    const nextTime=document.getElementById('football-following-next-time');
-    if(nextEl)nextEl.textContent=next?`${next.home} vs ${next.away}`:'No upcoming match';
-    if(nextTime)nextTime.textContent=next?`${localDate(next.utc)} · ${localTime(next.utc)}`:'Nothing scheduled';
+    const fixtureJob=getFollowedFixtures().then(followedFixtures=>{
+      renderMatchList('football-overview-fixtures',followedFixtures,8);
 
-    const weekCount=followedFixtures.filter(m=>{
-      const t=new Date(m.utc).getTime();
-      return !m.finished&&!m.cancelled&&Number.isFinite(t)&&t>=now&&t<=weekEnd;
-    }).length;
-    const weekEl=document.getElementById('football-following-week-count');if(weekEl)weekEl.textContent=weekCount;
+      const now=Date.now(),weekEnd=now+7*86400000;
+      const next=followedFixtures.find(m=>!m.finished&&!m.cancelled);
+      const nextEl=document.getElementById('football-following-next-match');
+      const nextTime=document.getElementById('football-following-next-time');
+      if(nextEl)nextEl.textContent=next?`${next.home} vs ${next.away}`:'No upcoming match';
+      if(nextTime)nextTime.textContent=next?`${localDate(next.utc)} · ${localTime(next.utc)}`:'Nothing scheduled';
 
-    const liveCount=followedFixtures.filter(m=>m.started&&!m.finished&&!m.cancelled).length;
-    const liveEl=document.getElementById('football-live-count');if(liveEl)liveEl.textContent=liveCount;
+      const weekCount=followedFixtures.filter(m=>{
+        const t=new Date(m.utc).getTime();
+        return !m.finished&&!m.cancelled&&Number.isFinite(t)&&t>=now&&t<=weekEnd;
+      }).length;
+      const weekEl=document.getElementById('football-following-week-count');if(weekEl)weekEl.textContent=weekCount;
 
-    const comparisons=await getFollowedPlayerComparisons();
-    renderFollowedPlayerComparisons(comparisons);
+      const liveCount=followedFixtures.filter(m=>m.started&&!m.finished&&!m.cancelled).length;
+      const liveEl=document.getElementById('football-live-count');if(liveEl)liveEl.textContent=liveCount;
+    });
+
+    const comparisonJob=getFollowedPlayerComparisons()
+      .then(renderFollowedPlayerComparisons)
+      .catch(e=>{
+        console.warn('Followed player comparison failed',e);
+        renderFollowedPlayerComparisons([]);
+      });
 
     renderNews('football-overview-news',newsData,6,true);
+    await Promise.allSettled([fixtureJob,comparisonJob]);
   }
 
   async function loadNews(){
@@ -11054,6 +11155,7 @@ document.addEventListener('DOMContentLoaded',()=>{
   window.glifeFootballRefresh=async function(){
     if(loading)return;loading=true;
     try{
+      clearFootballCache();
       await Promise.all([loadSelection(),loadNews()]);
       await loadPersonalOverview();
       if(typeof showToast==='function')showToast('Football updated');
