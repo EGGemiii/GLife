@@ -9706,17 +9706,33 @@ document.addEventListener('DOMContentLoaded',()=>{
 
   function normalizeMatch(m){
     const st=m.status||{};
+    const dateObj=m.date||{};
+    let home=m.home?.name||m.home?.longName||m.homeTeam?.name||m.homeTeamName||'';
+    let away=m.away?.name||m.away?.longName||m.awayTeam?.name||m.awayTeamName||'';
+
+    // Player recentMatches use teamName/opponentTeamName + isHome rather than
+    // nested home/away objects.
+    if(!home && !away && (m.teamName||m.opponentTeamName)){
+      if(m.isHome){
+        home=m.teamName||'';
+        away=m.opponentTeamName||'';
+      }else{
+        home=m.opponentTeamName||'';
+        away=m.teamName||'';
+      }
+    }
+
     return {
       id:m.id||m.matchId,
-      utc:st.utcTime||m.utcTime||m.matchDate||m.time,
-      home:m.home?.name||m.home?.longName||m.homeTeam?.name||'Home',
-      away:m.away?.name||m.away?.longName||m.awayTeam?.name||'Away',
+      utc:st.utcTime||m.utcTime||dateObj.utcTime||m.matchDate||m.time,
+      home:home||'Home',
+      away:away||'Away',
       hs:m.home?.score??m.homeScore??'',
       as:m.away?.score??m.awayScore??'',
-      started:!!st.started,
-      finished:!!st.finished,
+      started:!!st.started || !!m.resultString || !!m.score,
+      finished:!!st.finished || (!!m.resultString && !st.started),
       cancelled:!!st.cancelled,
-      score:st.scoreStr||((m.home?.score!==undefined&&m.away?.score!==undefined)?`${m.home.score} - ${m.away.score}`:''),
+      score:st.scoreStr||m.score||((m.home?.score!==undefined&&m.away?.score!==undefined)?`${m.home.score} - ${m.away.score}`:''),
       league:m.leagueName||m.tournamentName||''
     };
   }
@@ -9737,9 +9753,12 @@ document.addEventListener('DOMContentLoaded',()=>{
   function extractTeamFixtures(data){
     const candidates=[
       data?.fixtures?.allFixtures?.fixtures,
+      data?.fixtures?.allFixtures,
+      data?.fixtures?.allMatches,
       data?.fixtures?.fixtures,
       data?.fixtures,
       data?.overview?.fixtures,
+      data?.overview?.teamForm,
       data?.matches
     ];
     for(const c of candidates)if(Array.isArray(c))return c.map(normalizeMatch);
@@ -9841,9 +9860,17 @@ document.addEventListener('DOMContentLoaded',()=>{
     const type=document.querySelector('.football-selection-type');
     if(name)name.textContent=selection.name||'Football';
     if(sub)sub.textContent=selection.sub||'';
-    if(type)type.textContent=selection.type==='team'?'Club / National Team':selection.type[0].toUpperCase()+selection.type.slice(1);
+    if(type)type.textContent=selection.type==='team'?'Club / National Team':selection.type==='player'?'Player':selection.type[0].toUpperCase()+selection.type.slice(1);
     const comp=document.getElementById('football-current-competition');
-    if(comp)comp.textContent=selection.type==='league'?selection.name:(selection.sub||'Across competitions');
+    if(comp){
+      if(selection.type==='league')comp.textContent=selection.name;
+      else if(selection.type==='player')comp.textContent=selection.sub||'Current club';
+      else comp.textContent=selection.sub||'Across competitions';
+    }
+
+    const compLabel=comp?.closest('.football-kpi')?.querySelector('span');
+    if(compLabel)compLabel.textContent=selection.type==='player'?'Current club':'Competition';
+
     updateFollowButton();
   }
   function updateFollowButton(){
@@ -9887,10 +9914,36 @@ document.addEventListener('DOMContentLoaded',()=>{
         fixtures=extractTeamFixtures(teamData);
       }else if(selection.type==='player'){
         playerData=await api('player',{id:selection.id});
-        const next=playerData?.nextMatch;
-        if(next)fixtures=[normalizeMatch(next)];
-        const recent=playerData?.recentMatches||playerData?.lastMatches||[];
-        if(Array.isArray(recent))fixtures.push(...recent.map(normalizeMatch));
+
+        // A player profile's recentMatches are performance rows, not a normal
+        // fixture list. For future matches, load the player's current club and
+        // use the club's real fixture payload.
+        const primaryTeam=playerData?.primaryTeam||{};
+        const teamId=primaryTeam.teamId||primaryTeam.id;
+        const teamName=primaryTeam.teamName||primaryTeam.name||selection.sub||'';
+
+        if(teamId){
+          try{
+            teamData=await api('team',{id:teamId});
+            fixtures=extractTeamFixtures(teamData);
+          }catch(teamErr){
+            console.warn('Player current-team fixtures failed',teamErr);
+          }
+        }
+
+        // If the team endpoint cannot be read, keep properly-normalized recent
+        // player matches as a fallback, rather than showing Home/Away placeholders.
+        if(!fixtures.length){
+          const recent=playerData?.recentMatches||playerData?.lastMatches||[];
+          if(Array.isArray(recent))fixtures=recent.map(normalizeMatch);
+        }
+
+        // Keep the selection subtitle synchronized with FotMob's current club.
+        if(teamName){
+          selection.sub=teamName;
+          prefs.lastSelection=selection;
+          localStorage.setItem(KEY,JSON.stringify(prefs));
+        }
       }
     }catch(e){
       console.warn('GLife football selection load failed',e);
