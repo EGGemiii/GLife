@@ -2002,6 +2002,117 @@
 
 
 /* GLife Football v67 */
+
+/* GLife Football v71 premium visual upgrade */
+.football-page{
+  --fb-purple:#7c3aed;
+  --fb-purple-soft:rgba(124,58,237,.11);
+  --fb-gold:#f59e0b;
+}
+.football-head{padding-top:2px}
+.football-head h1{font-size:32px;letter-spacing:-.03em}
+.football-searchbox input{font-size:12px;padding:12px 14px}
+.football-tabs{position:sticky;top:0;z-index:4;padding:8px 0;background:var(--life-bg,#fff);backdrop-filter:blur(10px)}
+.football-entity-hero{
+  min-height:110px;
+  padding:16px 18px;
+  background:
+    radial-gradient(circle at 10% 0%,rgba(124,58,237,.24),transparent 42%),
+    linear-gradient(135deg,rgba(124,58,237,.11),rgba(37,99,235,.06));
+}
+.football-entity-identity{display:flex;align-items:center;gap:14px;min-width:0}
+.football-entity-image-wrap{
+  width:70px;height:70px;border-radius:16px;
+  display:grid;place-items:center;
+  background:rgba(255,255,255,.92);
+  border:1px solid rgba(255,255,255,.18);
+  box-shadow:0 8px 24px rgba(0,0,0,.10);
+  flex:0 0 70px;overflow:hidden
+}
+.football-entity-image{width:58px;height:58px;object-fit:contain}
+.football-entity-image.player-face{width:70px;height:70px;object-fit:cover}
+.football-entity-copy{min-width:0}
+.football-entity-copy strong{font-size:22px!important;letter-spacing:-.02em}
+.football-selection-meta{display:flex;gap:8px;flex-wrap:wrap;margin-top:7px}
+.football-meta-chip{
+  font-size:9px;padding:4px 7px;border-radius:999px;
+  background:rgba(255,255,255,.09);border:1px solid rgba(255,255,255,.10);
+  color:var(--life-text-soft,#d7dced)
+}
+.football-match{
+  grid-template-columns:104px minmax(0,1fr) auto;
+  gap:12px;padding:11px 12px;
+  transition:border-color .15s ease,transform .15s ease,background .15s ease
+}
+.football-match:hover{border-color:#7c3aed;transform:translateY(-1px)}
+.football-match-teams{display:flex;flex-direction:column;gap:7px}
+.football-match-team{display:flex!important;align-items:center;gap:8px}
+.football-match-team img{width:22px;height:22px;object-fit:contain;flex:0 0 22px}
+.football-match-score{min-width:56px;text-align:center}
+.football-mini-leader,.football-leader-row{
+  grid-template-columns:30px 34px minmax(0,1fr) 58px 30px
+}
+.football-mini-leader .football-player-avatar,.football-leader-row .football-player-avatar{
+  width:30px;height:30px;border-radius:50%;object-fit:cover;background:#d7dce5
+}
+.football-player-teamline{display:flex;align-items:center;gap:5px}
+.football-player-teamline img{width:14px;height:14px;object-fit:contain}
+.football-stat{text-align:right}
+.football-search-result img{border-radius:50%;background:#fff;padding:2px}
+.football-search-result[data-type="team"] img,.football-search-result[data-type="league"] img{border-radius:7px}
+.football-follow-item-main{display:flex;align-items:center;gap:9px;min-width:0}
+.football-follow-item-main img{width:34px;height:34px;object-fit:contain;border-radius:50%;background:#fff;padding:2px}
+.football-follow-item-main .team-logo,.football-follow-item-main .league-logo{border-radius:8px}
+.football-overview-standings{display:flex;flex-direction:column;margin-bottom:12px}
+.football-overview-table-row{
+  display:grid;grid-template-columns:24px 22px 1fr auto;gap:7px;align-items:center;
+  padding:7px 4px;border-bottom:1px solid var(--life-border);font-size:10px
+}
+.football-overview-table-row:last-child{border-bottom:0}
+.football-overview-table-row img{width:20px;height:20px;object-fit:contain}
+.football-overview-table-row strong{font-size:10px}
+.football-team-form{display:flex;gap:8px;flex-wrap:wrap}
+.football-form-item{
+  display:flex;align-items:center;gap:7px;border:1px solid var(--life-border);
+  border-radius:9px;padding:7px 8px;background:var(--life-card-soft);min-width:145px
+}
+.football-form-item img{width:22px;height:22px;object-fit:contain}
+.football-form-result{
+  width:20px;height:20px;border-radius:50%;display:grid;place-items:center;
+  font-size:9px;font-weight:900;background:#64748b;color:white
+}
+.football-form-result.w{background:#16a34a}.football-form-result.d{background:#64748b}.football-form-result.l{background:#dc2626}
+.football-form-item strong{font-size:9px}.football-form-item small{display:block;font-size:8px;color:var(--life-muted)}
+.football-standings-table{overflow:auto}
+.football-standings-head,.football-standings-row{
+  display:grid;grid-template-columns:34px minmax(190px,1fr) repeat(8,52px);
+  align-items:center;min-width:720px
+}
+.football-standings-head{
+  position:sticky;top:0;z-index:1;background:var(--life-card);
+  font-size:8px;text-transform:uppercase;color:var(--life-muted);font-weight:900;
+  border-bottom:1px solid var(--life-border)
+}
+.football-standings-head>div,.football-standings-row>div{padding:8px 7px}
+.football-standings-row{font-size:10px;border-bottom:1px solid var(--life-border)}
+.football-standings-row:hover{background:var(--life-card-soft)}
+.football-standings-team{display:flex;align-items:center;gap:8px;font-weight:800}
+.football-standings-team img{width:22px;height:22px;object-fit:contain}
+.football-pos{font-weight:900;text-align:center}
+.football-pts{font-weight:900;color:#8b5cf6}
+.football-news-item{transition:transform .16s ease,border-color .16s ease}
+.football-news-item:hover{transform:translateY(-2px);border-color:#7c3aed}
+.life-shell.dark-mode .football-entity-image-wrap,
+.life-shell.dark-mode .football-search-result img,
+.life-shell.dark-mode .football-follow-item-main img{background:#f8fafc}
+@media(max-width:700px){
+  .football-entity-hero{align-items:flex-start}
+  .football-entity-image-wrap{width:58px;height:58px;flex-basis:58px}
+  .football-entity-image{width:48px;height:48px}
+  .football-entity-image.player-face{width:58px;height:58px}
+  .football-entity-copy strong{font-size:18px!important}
+}
+
 .football-page{max-width:1600px;margin:0 auto;padding-bottom:40px}
 .football-head{display:flex;justify-content:space-between;gap:16px;align-items:flex-start;margin-bottom:18px}
 .football-head h1{margin:0;font-size:30px}.football-head p{margin:5px 0 0;color:var(--life-muted);font-size:12px}
@@ -7004,16 +7115,23 @@ window.addEventListener('DOMContentLoaded', async () => {
         <div class="football-tabs">
           <button class="active" data-football-tab="overview" onclick="glifeFootballTab('overview')">Overview</button>
           <button data-football-tab="fixtures" onclick="glifeFootballTab('fixtures')">Fixtures</button>
+          <button data-football-tab="standings" onclick="glifeFootballTab('standings')">Standings</button>
           <button data-football-tab="leaders" onclick="glifeFootballTab('leaders')">Top Scorers & Assists</button>
           <button data-football-tab="news" onclick="glifeFootballTab('news')">News</button>
           <button data-football-tab="following" onclick="glifeFootballTab('following')">Following</button>
         </div>
 
-        <div id="football-selection-banner" class="football-selection-banner">
-          <div>
-            <span class="football-selection-type">League</span>
-            <strong id="football-selection-name">Premier League</strong>
-            <small id="football-selection-sub">Choose a league, club, national team or player above.</small>
+        <div id="football-selection-banner" class="football-selection-banner football-entity-hero">
+          <div class="football-entity-identity">
+            <div class="football-entity-image-wrap">
+              <img id="football-selection-image" class="football-entity-image" alt="" src="https://images.fotmob.com/image_resources/logo/leaguelogo/47.png" onerror="this.style.display='none'">
+            </div>
+            <div class="football-entity-copy">
+              <span class="football-selection-type">League</span>
+              <strong id="football-selection-name">Premier League</strong>
+              <small id="football-selection-sub">England</small>
+              <div id="football-selection-meta" class="football-selection-meta"></div>
+            </div>
           </div>
           <button id="football-follow-selection" onclick="glifeFootballToggleSelectionFollow()">☆ Follow</button>
         </div>
@@ -7032,11 +7150,19 @@ window.addEventListener('DOMContentLoaded', async () => {
               <div id="football-overview-fixtures" class="football-match-list"><div class="life-dashboard-empty">Loading fixtures...</div></div>
             </div>
             <div class="life-card">
-              <div class="card-header"><div><h2>League leaders</h2><div class="dash-card-subtitle">Goals and assists</div></div><span class="link" onclick="glifeFootballTab('leaders')">Full table</span></div>
-              <div class="football-leader-preview">
+              <div class="card-header">
+                <div>
+                  <h2 id="football-overview-side-title">League snapshot</h2>
+                  <div class="dash-card-subtitle" id="football-overview-side-subtitle">Table and leaders</div>
+                </div>
+                <span class="link" id="football-overview-side-link" onclick="glifeFootballTab('standings')">Full table</span>
+              </div>
+              <div id="football-overview-standings" class="football-overview-standings"></div>
+              <div class="football-leader-preview" id="football-overview-leader-preview">
                 <div><h3>Top scorers</h3><div id="football-overview-scorers"></div></div>
                 <div><h3>Top assists</h3><div id="football-overview-assists"></div></div>
               </div>
+              <div id="football-team-form" class="football-team-form"></div>
             </div>
           </div>
 
@@ -7060,6 +7186,20 @@ window.addEventListener('DOMContentLoaded', async () => {
               </div>
             </div>
             <div id="football-fixtures-list" class="football-match-list"></div>
+          </div>
+        </div>
+
+
+        <div id="football-panel-standings" class="football-panel">
+          <div class="life-card">
+            <div class="football-panel-tools">
+              <div>
+                <h2>Standings</h2>
+                <p id="football-standings-subtitle">Current league table.</p>
+              </div>
+              <span class="football-source-label" id="football-standings-season"></span>
+            </div>
+            <div id="football-standings-table" class="football-standings-table"></div>
           </div>
         </div>
 
@@ -9646,7 +9786,7 @@ document.addEventListener('DOMContentLoaded',()=>{
 
   let prefs=loadPrefs();
   let selection=prefs.lastSelection||{type:'league',id:47,name:'Premier League',sub:'England'};
-  let leagueData=null, teamData=null, playerData=null, newsData=[], fixtures=[], scorers=[], assists=[];
+  let leagueData=null, teamData=null, playerData=null, newsData=[], fixtures=[], scorers=[], assists=[], standings=[], teamForm=[];
   let activeTab='overview', fixtureFilter='upcoming', newsFilter='all', loading=false;
 
   function loadPrefs(){
@@ -9665,6 +9805,7 @@ document.addEventListener('DOMContentLoaded',()=>{
     if(prefs.lastSelection)selection=prefs.lastSelection;
     renderFollowing();
     updateFollowButton();
+    updateEntityHero();
   };
 
   async function api(mode,params={}){
@@ -9691,6 +9832,9 @@ document.addEventListener('DOMContentLoaded',()=>{
     if(type==='league')return `https://images.fotmob.com/image_resources/logo/leaguelogo/${id}.png`;
     return '';
   }
+  function teamLogo(id){return id?`https://images.fotmob.com/image_resources/logo/teamlogo/${id}.png`:''}
+  function playerFace(id){return id?`https://images.fotmob.com/image_resources/playerimages/${id}.png`:''}
+  function leagueLogo(id){return id?`https://images.fotmob.com/image_resources/logo/leaguelogo/${id}.png`:''}
   function localDate(utc){
     if(!utc)return '';
     const d=new Date(utc);
@@ -9727,6 +9871,8 @@ document.addEventListener('DOMContentLoaded',()=>{
       utc:st.utcTime||m.utcTime||dateObj.utcTime||m.matchDate||m.time,
       home:home||'Home',
       away:away||'Away',
+      homeId:m.home?.id||m.homeTeam?.id||m.homeTeamId||(m.isHome?m.teamId:m.opponentTeamId)||null,
+      awayId:m.away?.id||m.awayTeam?.id||m.awayTeamId||(m.isHome?m.opponentTeamId:m.teamId)||null,
       hs:m.home?.score??m.homeScore??'',
       as:m.away?.score??m.awayScore??'',
       started:!!st.started || !!m.resultString || !!m.score,
@@ -9784,6 +9930,7 @@ document.addEventListener('DOMContentLoaded',()=>{
       id:p.id||p.playerId||r.id,
       name:p.name||p.playerName||r.name||'Player',
       team:p.teamName||p.team?.name||r.teamName||r.team?.name||'',
+      teamId:p.teamId||p.team?.id||r.teamId||r.team?.id||null,
       value:Number(r.value??r.statValue??r.goals??r.assists??p.value??0),
       kind
     };
@@ -9810,7 +9957,10 @@ document.addEventListener('DOMContentLoaded',()=>{
       const result=m.finished||m.started;
       return `<div class="football-match ${live?'live':''}">
         <div class="football-match-time">${esc(localDate(m.utc))}<br>${esc(localTime(m.utc))}${live?'<span class="football-live-badge">LIVE</span>':''}</div>
-        <div class="football-match-teams"><span>${esc(m.home)}</span><span>${esc(m.away)}</span></div>
+        <div class="football-match-teams">
+          <span class="football-match-team">${m.homeId?`<img src="${teamLogo(m.homeId)}" alt="" onerror="this.style.visibility='hidden'">`:''}<span>${esc(m.home)}</span></span>
+          <span class="football-match-team">${m.awayId?`<img src="${teamLogo(m.awayId)}" alt="" onerror="this.style.visibility='hidden'">`:''}<span>${esc(m.away)}</span></span>
+        </div>
         <div class="football-match-score">${result?esc(m.score||`${m.hs} - ${m.as}`):'vs'}</div>
       </div>`;
     }).join('');
@@ -9825,7 +9975,11 @@ document.addEventListener('DOMContentLoaded',()=>{
       const cls=limit?'football-mini-leader':'football-leader-row';
       return `<div class="${cls} ${isFollowed?'followed':''}">
         <span class="football-rank">${r.rank||i+1}</span>
-        <div><span class="football-player-name">${esc(r.name)}</span><span class="football-player-team">${esc(r.team)}</span></div>
+        <img class="football-player-avatar" src="${playerFace(r.id)}" alt="" onerror="this.style.visibility='hidden'">
+        <div>
+          <span class="football-player-name">${esc(r.name)}</span>
+          <span class="football-player-teamline">${r.teamId?`<img src="${teamLogo(r.teamId)}" alt="" onerror="this.style.visibility='hidden'">`:''}<span class="football-player-team">${esc(r.team)}</span></span>
+        </div>
         <strong class="football-stat">${r.value}</strong>
         <button class="football-star-btn ${isFollowed?'followed':''}" onclick="glifeFootballToggleFollow('player','${esc(r.id)}','${esc(r.name)}','${esc(r.team)}')">${isFollowed?'★':'☆'}</button>
       </div>`;
@@ -9854,6 +10008,101 @@ document.addEventListener('DOMContentLoaded',()=>{
     </article>`).join('');
   }
 
+  function extractStandings(data){
+    const raw=data?.table;
+    const blocks=Array.isArray(raw)?raw:[raw];
+    for(const b of blocks.filter(Boolean)){
+      const rows=b?.data?.table?.all||b?.table?.all||b?.all;
+      if(Array.isArray(rows))return rows.map((r,i)=>({
+        pos:r.idx??r.position??i+1,
+        id:r.id||r.teamId,
+        name:r.name||r.teamName||'Team',
+        played:r.played??r.pld??0,
+        wins:r.wins??r.win??0,
+        draws:r.draws??r.draw??0,
+        losses:r.losses??r.loss??0,
+        gf:(String(r.scoresStr||'').split('-')[0]||r.goalsFor||''),
+        ga:(String(r.scoresStr||'').split('-')[1]||r.goalsAgainst||''),
+        gd:r.goalConDiff??r.goalDifference??'',
+        pts:r.pts??r.points??0
+      }));
+    }
+    return [];
+  }
+
+  function renderStandings(rows){
+    const el=document.getElementById('football-standings-table');
+    const mini=document.getElementById('football-overview-standings');
+    if(el){
+      if(!rows.length){
+        el.innerHTML='<div class="life-dashboard-empty">Standings are available when a league is selected.</div>';
+      }else{
+        el.innerHTML=`<div class="football-standings-head"><div>#</div><div>Team</div><div>P</div><div>W</div><div>D</div><div>L</div><div>GF</div><div>GA</div><div>GD</div><div>Pts</div></div>`+
+          rows.map(r=>`<div class="football-standings-row">
+            <div class="football-pos">${r.pos}</div>
+            <div class="football-standings-team">${r.id?`<img src="${teamLogo(r.id)}" alt="" onerror="this.style.visibility='hidden'">`:''}<span>${esc(r.name)}</span></div>
+            <div>${r.played}</div><div>${r.wins}</div><div>${r.draws}</div><div>${r.losses}</div><div>${r.gf}</div><div>${r.ga}</div><div>${r.gd}</div><div class="football-pts">${r.pts}</div>
+          </div>`).join('');
+      }
+    }
+    if(mini){
+      mini.innerHTML=rows.length?rows.slice(0,5).map(r=>`<div class="football-overview-table-row"><span>${r.pos}</span>${r.id?`<img src="${teamLogo(r.id)}" alt="" onerror="this.style.visibility='hidden'">`:'<span></span>'}<strong>${esc(r.name)}</strong><span>${r.pts} pts</span></div>`).join(''):'';
+    }
+  }
+
+  function extractTeamForm(data){
+    const rows=data?.overview?.teamForm||data?.overview?.form||[];
+    return Array.isArray(rows)?rows.slice(-5).map(normalizeMatch):[];
+  }
+
+  function renderTeamForm(rows){
+    const el=document.getElementById('football-team-form');if(!el)return;
+    if(!rows.length){el.innerHTML='';return}
+    el.innerHTML=rows.map(m=>{
+      const score=m.score||`${m.hs} - ${m.as}`;
+      const ourName=selection.name||'';
+      let result='d';
+      let letter='D';
+      const parts=String(score).match(/(\d+)\D+(\d+)/);
+      if(parts){
+        const hs=Number(parts[1]),as=Number(parts[2]);
+        const isHome=m.home===ourName;
+        const ours=isHome?hs:as, theirs=isHome?as:hs;
+        if(ours>theirs){result='w';letter='W'} else if(ours<theirs){result='l';letter='L'}
+      }
+      const opp=m.home===ourName?m.away:m.home;
+      const oppId=m.home===ourName?m.awayId:m.homeId;
+      return `<div class="football-form-item"><span class="football-form-result ${result}">${letter}</span>${oppId?`<img src="${teamLogo(oppId)}" alt="" onerror="this.style.visibility='hidden'">`:''}<div><strong>${esc(opp)}</strong><small>${esc(score)}</small></div></div>`;
+    }).join('');
+  }
+
+  function updateEntityHero(){
+    const img=document.getElementById('football-selection-image');
+    const meta=document.getElementById('football-selection-meta');
+    if(img){
+      img.style.display='';
+      img.classList.toggle('player-face',selection.type==='player');
+      img.src=entityLogo(selection.type,selection.id);
+    }
+    let chips=[];
+    if(selection.type==='league'){
+      const season=leagueData?.details?.selectedSeason||leagueData?.selectedSeason||leagueData?.seasons?.[0]?.name;
+      if(season)chips.push(`Season ${season}`);
+      const country=leagueData?.details?.country||selection.sub;
+      if(country)chips.push(country);
+    }else if(selection.type==='team'){
+      const d=teamData?.details||{};
+      if(d.country)chips.push(d.country);
+      if(d.primaryLeagueName)chips.push(d.primaryLeagueName);
+    }else if(selection.type==='player'){
+      if(playerData?.position)chips.push(playerData.position);
+      if(playerData?.primaryTeam?.teamName)chips.push(playerData.primaryTeam.teamName);
+      const age=playerData?.playerInformation?.find?.(x=>String(x.translationKey||'').toLowerCase()==='age')?.value?.fallback;
+      if(age)chips.push(`${age} years`);
+    }
+    if(meta)meta.innerHTML=chips.slice(0,4).map(x=>`<span class="football-meta-chip">${esc(x)}</span>`).join('');
+  }
+
   function updateSelectionUI(){
     const name=document.getElementById('football-selection-name');
     const sub=document.getElementById('football-selection-sub');
@@ -9871,6 +10120,7 @@ document.addEventListener('DOMContentLoaded',()=>{
     const compLabel=comp?.closest('.football-kpi')?.querySelector('span');
     if(compLabel)compLabel.textContent=selection.type==='player'?'Current club':'Competition';
 
+    updateEntityHero();
     updateFollowButton();
   }
   function updateFollowButton(){
@@ -9884,7 +10134,7 @@ document.addEventListener('DOMContentLoaded',()=>{
     const el=document.getElementById('football-following-list');if(!el)return;
     const list=prefs.following||[];
     if(!list.length){el.innerHTML='<div class="life-dashboard-empty">Nothing followed yet. Search and follow a league, team or player.</div>';return}
-    el.innerHTML=list.map(x=>`<div class="football-follow-item"><div><strong>${esc(x.name)}</strong><small>${esc(x.type)}${x.sub?' · '+esc(x.sub):''}</small></div><button onclick="glifeFootballUnfollow('${esc(x.type)}','${esc(x.id)}')">Remove</button></div>`).join('');
+    el.innerHTML=list.map(x=>`<div class="football-follow-item"><div class="football-follow-item-main"><img class="${x.type==='team'?'team-logo':x.type==='league'?'league-logo':''}" src="${entityLogo(x.type,x.id)}" alt="" onerror="this.style.display='none'"><div><strong>${esc(x.name)}</strong><small>${esc(x.type)}${x.sub?' · '+esc(x.sub):''}</small></div></div><button onclick="glifeFootballUnfollow('${esc(x.type)}','${esc(x.id)}')">Remove</button></div>`).join('');
   }
 
   async function loadNews(){
@@ -9898,11 +10148,12 @@ document.addEventListener('DOMContentLoaded',()=>{
 
   async function loadSelection(){
     updateSelectionUI();
-    leagueData=teamData=playerData=null;fixtures=[];scorers=[];assists=[];
+    leagueData=teamData=playerData=null;fixtures=[];scorers=[];assists=[];standings=[];teamForm=[];
     try{
       if(selection.type==='league'){
         leagueData=await api('league',{id:selection.id});
         fixtures=extractLeagueFixtures(leagueData);
+        standings=extractStandings(leagueData);
         scorers=statRowsFromLeague(leagueData,'goals');
         assists=statRowsFromLeague(leagueData,'assists');
         if(!scorers.length)scorers=await deepStats('goals');
@@ -9912,6 +10163,7 @@ document.addEventListener('DOMContentLoaded',()=>{
       }else if(selection.type==='team'){
         teamData=await api('team',{id:selection.id});
         fixtures=extractTeamFixtures(teamData);
+        teamForm=extractTeamForm(teamData);
       }else if(selection.type==='player'){
         playerData=await api('player',{id:selection.id});
 
@@ -9926,6 +10178,7 @@ document.addEventListener('DOMContentLoaded',()=>{
           try{
             teamData=await api('team',{id:teamId});
             fixtures=extractTeamFixtures(teamData);
+            teamForm=extractTeamForm(teamData);
           }catch(teamErr){
             console.warn('Player current-team fixtures failed',teamErr);
           }
@@ -9960,8 +10213,32 @@ document.addEventListener('DOMContentLoaded',()=>{
     const nextT=document.getElementById('football-next-match-time');if(nextT)nextT.textContent=nm?`${localDate(nm.utc)} · ${localTime(nm.utc)}`:'';
     const liveEl=document.getElementById('football-live-count');if(liveEl)liveEl.textContent=live.length;
 
+    updateEntityHero();
     renderMatchList('football-overview-fixtures',upcoming.length?upcoming:fixtures,6);
     renderFixtures();
+    renderStandings(standings);
+    renderTeamForm(teamForm);
+
+    const sideTitle=document.getElementById('football-overview-side-title');
+    const sideSub=document.getElementById('football-overview-side-subtitle');
+    const sideLink=document.getElementById('football-overview-side-link');
+    const leaderPreview=document.getElementById('football-overview-leader-preview');
+    if(selection.type==='league'){
+      if(sideTitle)sideTitle.textContent='League snapshot';
+      if(sideSub)sideSub.textContent='Top five and key leaders';
+      if(sideLink){sideLink.textContent='Full table';sideLink.onclick=()=>glifeFootballTab('standings')}
+      if(leaderPreview)leaderPreview.style.display='grid';
+    }else{
+      if(sideTitle)sideTitle.textContent=selection.type==='player'?'Current club form':'Recent form';
+      if(sideSub)sideSub.textContent='Latest results';
+      if(sideLink){sideLink.textContent='Fixtures';sideLink.onclick=()=>glifeFootballTab('fixtures')}
+      if(leaderPreview)leaderPreview.style.display='none';
+    }
+    const stSub=document.getElementById('football-standings-subtitle');
+    const stSeason=document.getElementById('football-standings-season');
+    if(stSub)stSub.textContent=selection.type==='league'?`${selection.name} current table.`:'Standings are available for league selections.';
+    if(stSeason)stSeason.textContent=leagueData?.details?.selectedSeason||leagueData?.selectedSeason||'';
+
     renderLeaderRows('football-overview-scorers',scorers,5);
     renderLeaderRows('football-overview-assists',assists,5);
     renderLeaderRows('football-scorers-list',scorers,0);
@@ -10054,7 +10331,7 @@ document.addEventListener('DOMContentLoaded',()=>{
         .map(x=>({...x,type:x.type==='tournament'?'league':x.type}))
         .filter((x,i,a)=>a.findIndex(y=>y.type===x.type&&String(y.id)===String(x.id))===i)
         .slice(0,12);
-      box.innerHTML=normalized.length?normalized.map(x=>`<div class="football-search-result" onclick="glifeFootballSelect('${esc(x.type)}','${esc(x.id)}','${esc(x.name)}','${esc(x.sub)}')"><img src="${entityLogo(x.type,x.id)}" onerror="this.style.display='none'"><div><strong>${esc(x.name)}</strong><small>${esc(x.type)}${x.sub?' · '+esc(x.sub):''}</small></div></div>`).join(''):'<div class="life-dashboard-empty">No football results found.</div>';
+      box.innerHTML=normalized.length?normalized.map(x=>`<div class="football-search-result" data-type="${esc(x.type)}" onclick="glifeFootballSelect('${esc(x.type)}','${esc(x.id)}','${esc(x.name)}','${esc(x.sub)}')"><img src="${entityLogo(x.type,x.id)}" onerror="this.style.display='none'"><div><strong>${esc(x.name)}</strong><small>${esc(x.type)}${x.sub?' · '+esc(x.sub):''}</small></div></div>`).join(''):'<div class="life-dashboard-empty">No football results found.</div>';
     }catch(e){box.innerHTML='<div class="life-dashboard-empty">Search unavailable. Check the football Edge Function.</div>'}
   };
 
