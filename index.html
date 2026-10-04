@@ -2010,6 +2010,31 @@
 /* GLife Football v73 followed-player comparisons */
 
 /* GLife Football v74 leaderboard + followed-player fixes */
+
+/* GLife Football v76 */
+.football-selection-compact{
+  display:flex;justify-content:space-between;align-items:center;gap:12px;
+  padding:8px 11px;margin-bottom:12px;border:1px solid var(--fb-border);
+  border-radius:10px;background:var(--fb-surface)
+}
+.football-selection-compact-left{display:flex;align-items:center;gap:9px;min-width:0}
+.football-selection-compact-logo{
+  width:36px;height:36px;object-fit:contain;border-radius:8px;
+  background:#fff;padding:3px;flex:0 0 36px
+}
+.football-selection-compact-left strong{display:block;font-size:12px}
+.football-selection-compact-left small{display:block;font-size:8px;color:var(--fb-muted);margin-top:2px}
+.football-selection-compact-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+.football-selection-compact #football-follow-selection{
+  border:1px solid var(--fb-accent);background:transparent;color:var(--fb-accent);
+  border-radius:8px;padding:7px 10px;font-size:9px;font-weight:900;cursor:pointer
+}
+.football-selection-compact #football-follow-selection.following{background:var(--fb-accent);color:#fff}
+@media(max-width:700px){
+  .football-selection-compact{align-items:flex-start}
+  .football-selection-compact-actions{justify-content:flex-start}
+}
+
 .football-leaderboard-layout{
   display:grid;
   grid-template-columns:repeat(2,minmax(0,1fr));
@@ -7368,19 +7393,19 @@ window.addEventListener('DOMContentLoaded', async () => {
           <button data-football-tab="following" onclick="glifeFootballTab('following')">Following</button>
         </div>
 
-        <div id="football-selection-banner" class="football-selection-banner football-entity-hero">
-          <div class="football-entity-identity">
-            <div class="football-entity-image-wrap">
-              <img id="football-selection-image" class="football-entity-image" alt="" src="https://images.fotmob.com/image_resources/logo/leaguelogo/47.png" onerror="this.style.display='none'">
-            </div>
-            <div class="football-entity-copy">
-              <span class="football-selection-type">League</span>
+        <div id="football-selection-banner" class="football-selection-compact">
+          <div class="football-selection-compact-left">
+            <img id="football-selection-image" class="football-selection-compact-logo" alt="" src="https://images.fotmob.com/image_resources/logo/leaguelogo/47.png" onerror="this.style.display='none'">
+            <div>
+              <span class="football-selection-type">Current selection</span>
               <strong id="football-selection-name">Premier League</strong>
               <small id="football-selection-sub">England</small>
-              <div id="football-selection-meta" class="football-selection-meta"></div>
             </div>
           </div>
-          <button id="football-follow-selection" onclick="glifeFootballToggleSelectionFollow()">☆ Follow</button>
+          <div class="football-selection-compact-actions">
+            <div id="football-selection-meta" class="football-selection-meta"></div>
+            <button id="football-follow-selection" onclick="glifeFootballToggleSelectionFollow()">☆ Follow</button>
+          </div>
         </div>
 
         <div id="football-panel-overview" class="football-panel active">
@@ -7395,7 +7420,7 @@ window.addEventListener('DOMContentLoaded', async () => {
           <div class="football-kpi-grid">
             <div class="life-card football-kpi"><span>Following</span><strong id="football-follow-count">0</strong><small>players, teams & leagues</small></div>
             <div class="life-card football-kpi"><span>Next followed match</span><strong id="football-following-next-match">—</strong><small id="football-following-next-time">Nothing scheduled</small></div>
-            <div class="life-card football-kpi"><span>Next 7 days</span><strong id="football-following-week-count">0</strong><small>matches involving followed entities</small></div>
+            <div class="life-card football-kpi"><span>Next 7 days</span><strong id="football-following-week-count">0</strong><small>followed players, clubs & national teams only</small></div>
             <div class="life-card football-kpi"><span>Live now</span><strong id="football-live-count">0</strong><small>followed matches</small></div>
           </div>
 
@@ -7410,7 +7435,7 @@ window.addEventListener('DOMContentLoaded', async () => {
           <div class="grid football-main-grid">
             <div class="life-card">
               <div class="card-header">
-                <div><h2>Upcoming matches</h2><div class="dash-card-subtitle">Only fixtures connected to what you follow</div></div>
+                <div><h2>Upcoming matches</h2><div class="dash-card-subtitle">Followed players, clubs and national teams only</div></div>
                 <span class="link" onclick="glifeFootballTab('fixtures')">Fixtures</span>
               </div>
               <div id="football-overview-fixtures" class="football-match-list"><div class="life-dashboard-empty">Follow a team, player or league to build your overview.</div></div>
@@ -10468,12 +10493,10 @@ document.addEventListener('DOMContentLoaded',()=>{
     const seen=new Set();
 
     for(const f of list){
+      if(f.type==='league')continue;
       try{
         let rows=[];
-        if(f.type==='league'){
-          const d=await api('league',{id:f.id});
-          rows=extractLeagueFixtures(d);
-        }else if(f.type==='team'){
+        if(f.type==='team'){
           const d=await api('team',{id:f.id});
           rows=extractTeamFixtures(d);
         }else if(f.type==='player'){
@@ -10556,23 +10579,28 @@ document.addEventListener('DOMContentLoaded',()=>{
   async function getLeagueFullStats(league){
     try{
       const d=await api('league',{id:league.id});
-      const seasonId=d?.seasons?.[0]?.id||d?.seasonId||d?.details?.selectedSeasonId||'';
+      const seasonName=d?.details?.selectedSeason||d?.selectedSeason||d?.seasons?.[0]?.name||d?.seasons?.[0]?.id||'';
 
-      const loadStat=async(stat)=>{
-        const x=await api('deepstats',{id:league.id,season:seasonId,stat});
-        const rows=x?.statsData||x?.data||x?.players||x?.items||[];
-        return Array.isArray(rows)?rows.map((r,i)=>normalizeLeader(r,i+1,stat==='goals'?'goals':'assists')):[];
+      const parseDeepRows=(x,kind)=>{
+        let rows=x?.statsData||x?.data?.statsData||x?.data||x?.players||x?.items||[];
+        if(!Array.isArray(rows) && rows && typeof rows==='object'){
+          rows=rows.statsData||rows.players||rows.items||[];
+        }
+        return Array.isArray(rows)?rows.map((r,i)=>normalizeLeader(r,i+1,kind)):[];
       };
 
-      let goals=statRowsFromLeague(d,'goals');
-      let assists=statRowsFromLeague(d,'assists');
+      const loadStat=async(stat,kind)=>{
+        const x=await api('deepstats',{id:league.id,season:seasonName,stat});
+        return parseDeepRows(x,kind);
+      };
 
-      // The overview preview may contain only a few players. Deep stats supplies
-      // the full ranking so followed players outside the top five still appear.
-      const deepGoals=await loadStat('goals').catch(()=>[]);
-      const deepAssists=await loadStat('goal_assist').catch(()=>[]);
-      if(deepGoals.length)goals=deepGoals;
-      if(deepAssists.length)assists=deepAssists;
+      const previewGoals=statRowsFromLeague(d,'goals');
+      const previewAssists=statRowsFromLeague(d,'assists');
+      const deepGoals=await loadStat('goals','goals').catch(()=>[]);
+      const deepAssists=await loadStat('goal_assist','assists').catch(()=>[]);
+
+      const goals=deepGoals.length>previewGoals.length?deepGoals:previewGoals;
+      const assists=deepAssists.length>previewAssists.length?deepAssists:previewAssists;
 
       return {leagueData:d,goals,assists};
     }catch(e){
@@ -10712,8 +10740,8 @@ document.addEventListener('DOMContentLoaded',()=>{
     select.innerHTML=leagues.map(x=>`<option value="${esc(x.id)}">${esc(x.name)}</option>`).join('');
 
     const preferred=
-      (current&&leagues.some(x=>String(x.id)===String(current)))?current:
       (selection.type==='league'&&leagues.some(x=>String(x.id)===String(selection.id)))?selection.id:
+      (current&&leagues.some(x=>String(x.id)===String(current)))?current:
       leagues[0].id;
 
     select.value=String(preferred);
