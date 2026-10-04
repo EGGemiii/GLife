@@ -687,6 +687,22 @@
 .life-dashboard .forecast { display:grid; grid-template-columns:repeat(5,1fr); gap:8px; margin-top:18px; }
 .life-dashboard .forecast div { text-align:center; padding:9px 4px; border:1px solid #e7e9ed; border-radius:9px; font-size:11px; }
 .life-dashboard .forecast strong { display:block; margin:5px 0; }
+
+.life-dashboard .dash-weather-updated{
+  margin-top:10px;
+  font-size:9px;
+  color:#98a2b3;
+  text-align:right;
+}
+.life-dashboard #dash-weather-refresh{
+  cursor:pointer;
+  user-select:none;
+}
+.life-dashboard #dash-weather-refresh.weather-loading{
+  opacity:.6;
+  pointer-events:none;
+}
+
 .life-dashboard .event { display:flex; gap:12px; padding:12px 0; border-bottom:1px solid #e7e9ed; }
 .life-dashboard .event:last-child { border-bottom:0; }
 .life-dashboard .time { width:58px; color:#7b8491; font-size:11px; padding-top:2px; }
@@ -3248,24 +3264,25 @@ window.lifeExchangeTab=function(tab){
             <div class="card-header">
               <div>
                 <h2>Weather</h2>
-                <div class="dash-card-subtitle">Today & the next few days</div>
+                <div class="dash-card-subtitle" id="dash-weather-location">Riyadh · live forecast</div>
               </div>
-              <span class="link">7 day</span>
+              <span class="link" id="dash-weather-refresh" onclick="glifeWeatherRefresh(true)">↻ Refresh</span>
             </div>
             <div class="weather">
               <div>
-                <div class="temp">31°</div>
-                <div class="weather-meta">Feels like 34° · Clear<br>High 38° · Low 27°</div>
+                <div class="temp" id="dash-weather-temp">--°</div>
+                <div class="weather-meta" id="dash-weather-meta">Loading live weather...</div>
               </div>
-              <div class="weather-icon">☀️</div>
+              <div class="weather-icon" id="dash-weather-icon">⛅</div>
             </div>
-            <div class="forecast">
-              <div>Sat<strong>☀️ 38°</strong>27°</div>
-              <div>Sun<strong>☀️ 39°</strong>27°</div>
-              <div>Mon<strong>☀️ 38°</strong>26°</div>
-              <div>Tue<strong>🌤️ 37°</strong>25°</div>
-              <div>Wed<strong>☀️ 36°</strong>25°</div>
+            <div class="forecast" id="dash-weather-forecast">
+              <div>--<strong>⛅ --°</strong>--°</div>
+              <div>--<strong>⛅ --°</strong>--°</div>
+              <div>--<strong>⛅ --°</strong>--°</div>
+              <div>--<strong>⛅ --°</strong>--°</div>
+              <div>--<strong>⛅ --°</strong>--°</div>
             </div>
+            <div class="dash-weather-updated" id="dash-weather-updated">Connecting to weather service...</div>
           </div>
         </section>
 
@@ -9372,6 +9389,149 @@ document.addEventListener('DOMContentLoaded',()=>{
 .market-refresh-btn{font-size:11px!important;padding:5px 8px!important}
 .life-shell.dark-mode .market-auto-badge{color:#86efac;background:rgba(34,197,94,.15)}
 </style>
+<script id="glife-live-weather-v65">
+(function(){
+  const CACHE_KEY='glife.weather.riyadh.v1';
+  const LAT=24.7136, LON=46.6753;
+  const TZ='Asia/Riyadh';
+  let loading=false;
+  let lastFetch=0;
+
+  function weatherInfo(code,isDay=true){
+    code=Number(code);
+    if(code===0)return {text:'Clear',icon:isDay?'☀️':'🌙'};
+    if(code===1)return {text:'Mostly clear',icon:isDay?'🌤️':'🌙'};
+    if(code===2)return {text:'Partly cloudy',icon:'⛅'};
+    if(code===3)return {text:'Overcast',icon:'☁️'};
+    if(code===45||code===48)return {text:'Fog',icon:'🌫️'};
+    if([51,53,55,56,57].includes(code))return {text:'Drizzle',icon:'🌦️'};
+    if([61,63,65,66,67].includes(code))return {text:'Rain',icon:'🌧️'};
+    if([71,73,75,77].includes(code))return {text:'Snow',icon:'🌨️'};
+    if([80,81,82].includes(code))return {text:'Rain showers',icon:'🌦️'};
+    if([85,86].includes(code))return {text:'Snow showers',icon:'🌨️'};
+    if([95,96,99].includes(code))return {text:'Thunderstorm',icon:'⛈️'};
+    return {text:'Weather',icon:'⛅'};
+  }
+
+  function saveCache(data){
+    try{localStorage.setItem(CACHE_KEY,JSON.stringify({savedAt:Date.now(),data}))}catch(e){}
+  }
+  function readCache(){
+    try{
+      const x=JSON.parse(localStorage.getItem(CACHE_KEY)||'null');
+      return x&&x.data?x:null;
+    }catch(e){return null}
+  }
+  function fmtUpdated(ts,cached=false){
+    const d=new Date(ts||Date.now());
+    return `${cached?'Cached · ':''}Updated ${d.toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'})}`;
+  }
+
+  function render(data,meta={}){
+    if(!data)return;
+    const c=data.current||{};
+    const d=data.daily||{};
+    const info=weatherInfo(c.weather_code,c.is_day!==0);
+
+    const temp=document.getElementById('dash-weather-temp');
+    const icon=document.getElementById('dash-weather-icon');
+    const text=document.getElementById('dash-weather-meta');
+    const forecast=document.getElementById('dash-weather-forecast');
+    const updated=document.getElementById('dash-weather-updated');
+    const location=document.getElementById('dash-weather-location');
+
+    if(temp)temp.textContent=Number.isFinite(Number(c.temperature_2m))?`${Math.round(Number(c.temperature_2m))}°`:'--°';
+    if(icon)icon.textContent=info.icon;
+
+    const high=Array.isArray(d.temperature_2m_max)?Number(d.temperature_2m_max[0]):NaN;
+    const low=Array.isArray(d.temperature_2m_min)?Number(d.temperature_2m_min[0]):NaN;
+    const feels=Number(c.apparent_temperature);
+    const humidity=Number(c.relative_humidity_2m);
+
+    if(text){
+      const line1=`Feels like ${Number.isFinite(feels)?Math.round(feels)+'°':'--'} · ${info.text}`;
+      const line2=`High ${Number.isFinite(high)?Math.round(high)+'°':'--'} · Low ${Number.isFinite(low)?Math.round(low)+'°':'--'}${Number.isFinite(humidity)?' · Humidity '+Math.round(humidity)+'%':''}`;
+      text.innerHTML=`${line1}<br>${line2}`;
+    }
+
+    if(forecast && Array.isArray(d.time)){
+      const count=Math.min(5,d.time.length);
+      let cards='';
+      for(let i=0;i<count;i++){
+        const dt=new Date(d.time[i]+'T12:00:00');
+        const day=dt.toLocaleDateString('en-US',{weekday:'short'});
+        const wi=weatherInfo(d.weather_code?.[i],true);
+        const hi=Number(d.temperature_2m_max?.[i]);
+        const lo=Number(d.temperature_2m_min?.[i]);
+        cards+=`<div>${day}<strong>${wi.icon} ${Number.isFinite(hi)?Math.round(hi)+'°':'--°'}</strong>${Number.isFinite(lo)?Math.round(lo)+'°':'--°'}</div>`;
+      }
+      forecast.innerHTML=cards;
+    }
+
+    if(location)location.textContent='Riyadh · live forecast';
+    if(updated)updated.textContent=fmtUpdated(meta.savedAt||Date.now(),!!meta.cached);
+  }
+
+  async function fetchWeather(force=false){
+    if(loading)return;
+    if(!force && Date.now()-lastFetch<20*60*1000)return;
+
+    loading=true;
+    const btn=document.getElementById('dash-weather-refresh');
+    if(btn)btn.classList.add('weather-loading');
+
+    try{
+      const params=new URLSearchParams({
+        latitude:String(LAT),
+        longitude:String(LON),
+        timezone:TZ,
+        forecast_days:'7',
+        current:'temperature_2m,apparent_temperature,relative_humidity_2m,weather_code,is_day',
+        daily:'weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max'
+      });
+
+      const r=await fetch(`https://api.open-meteo.com/v1/forecast?${params.toString()}`,{cache:'no-store'});
+      if(!r.ok)throw new Error(`Weather request failed (${r.status})`);
+      const data=await r.json();
+      if(!data?.current || !data?.daily)throw new Error('Incomplete weather response');
+
+      lastFetch=Date.now();
+      saveCache(data);
+      render(data,{savedAt:lastFetch,cached:false});
+      if(force && typeof showToast==='function')showToast('Weather updated');
+    }catch(e){
+      console.warn('GLife weather refresh failed',e);
+      const cached=readCache();
+      if(cached){
+        render(cached.data,{savedAt:cached.savedAt,cached:true});
+        const updated=document.getElementById('dash-weather-updated');
+        if(updated)updated.textContent+=' · live update unavailable';
+      }else{
+        const meta=document.getElementById('dash-weather-meta');
+        const updated=document.getElementById('dash-weather-updated');
+        if(meta)meta.textContent='Weather temporarily unavailable';
+        if(updated)updated.textContent='Unable to load live weather';
+      }
+      if(force && typeof showToast==='function')showToast('Weather update unavailable');
+    }finally{
+      loading=false;
+      if(btn)btn.classList.remove('weather-loading');
+    }
+  }
+
+  window.glifeWeatherRefresh=fetchWeather;
+
+  document.addEventListener('DOMContentLoaded',()=>{
+    const cached=readCache();
+    if(cached)render(cached.data,{savedAt:cached.savedAt,cached:true});
+    setTimeout(()=>fetchWeather(true),500);
+    setInterval(()=>fetchWeather(false),30*60*1000);
+  });
+
+  window.addEventListener('focus',()=>fetchWeather(false));
+})();
+</script>
+
 <script id="lifeos-v47-market-sync">
 (function(){
   const TRACKED_FUNDS={
