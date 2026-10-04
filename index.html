@@ -703,6 +703,61 @@
   pointer-events:none;
 }
 
+.life-dashboard .weather-card-header{
+  align-items:flex-start;
+  gap:12px;
+}
+.life-dashboard .weather-header-actions{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  flex-wrap:wrap;
+  justify-content:flex-end;
+}
+.life-dashboard .weather-city-search{
+  display:flex;
+  align-items:center;
+  gap:6px;
+}
+.life-dashboard .weather-city-search input{
+  width:180px;
+  min-width:0;
+  border:1px solid var(--life-border,#dfe3e8);
+  background:var(--life-card-soft,#f7f8fa);
+  color:var(--life-text,#111827);
+  border-radius:8px;
+  padding:7px 9px;
+  font:inherit;
+  font-size:11px;
+  outline:none;
+}
+.life-dashboard .weather-city-search input:focus{
+  border-color:#7c3aed;
+  box-shadow:0 0 0 2px rgba(124,58,237,.12);
+}
+.life-dashboard .weather-city-search button{
+  border:1px solid var(--life-border,#dfe3e8);
+  background:var(--life-card-soft,#f7f8fa);
+  color:var(--life-text,#111827);
+  border-radius:8px;
+  padding:7px 10px;
+  font-size:10px;
+  font-weight:800;
+  cursor:pointer;
+}
+.life-shell.dark-mode .weather-city-search input,
+.life-shell.dark-mode .weather-city-search button{
+  background:#22263a!important;
+  color:#f8fafc!important;
+  border-color:#3a405d!important;
+}
+@media(max-width:760px){
+  .life-dashboard .weather-header-actions{width:100%;justify-content:space-between}
+  .life-dashboard .weather-city-search{flex:1}
+  .life-dashboard .weather-city-search input{width:100%}
+}
+
+
 .life-dashboard .event { display:flex; gap:12px; padding:12px 0; border-bottom:1px solid #e7e9ed; }
 .life-dashboard .event:last-child { border-bottom:0; }
 .life-dashboard .time { width:58px; color:#7b8491; font-size:11px; padding-top:2px; }
@@ -3261,12 +3316,18 @@ window.lifeExchangeTab=function(tab){
 
           <!-- Weather -->
           <div class="life-card dashboard-weather-card">
-            <div class="card-header">
+            <div class="card-header weather-card-header">
               <div>
                 <h2>Weather</h2>
                 <div class="dash-card-subtitle" id="dash-weather-location">Riyadh · live forecast</div>
               </div>
-              <span class="link" id="dash-weather-refresh" onclick="glifeWeatherRefresh(true)">↻ Refresh</span>
+              <div class="weather-header-actions">
+                <div class="weather-city-search">
+                  <input id="dash-weather-city-input" type="text" placeholder="Type a city..." autocomplete="off" onkeydown="if(event.key==='Enter')glifeWeatherSearchCity()">
+                  <button type="button" onclick="glifeWeatherSearchCity()">Search</button>
+                </div>
+                <span class="link" id="dash-weather-refresh" onclick="glifeWeatherRefresh(true)">↻ Refresh</span>
+              </div>
             </div>
             <div class="weather">
               <div>
@@ -9389,13 +9450,39 @@ document.addEventListener('DOMContentLoaded',()=>{
 .market-refresh-btn{font-size:11px!important;padding:5px 8px!important}
 .life-shell.dark-mode .market-auto-badge{color:#86efac;background:rgba(34,197,94,.15)}
 </style>
-<script id="glife-live-weather-v65">
+<script id="glife-live-weather-v66">
 (function(){
-  const CACHE_KEY='glife.weather.riyadh.v1';
-  const LAT=24.7136, LON=46.6753;
-  const TZ='Asia/Riyadh';
+  const CACHE_PREFIX='glife.weather.cache.';
+  const LOCATION_KEY='glife.weather.location.v1';
+  const DEFAULT_LOCATION={
+    name:'Riyadh',
+    country:'Saudi Arabia',
+    latitude:24.7136,
+    longitude:46.6753,
+    timezone:'Asia/Riyadh'
+  };
+
+  let location=loadLocation();
   let loading=false;
   let lastFetch=0;
+
+  function loadLocation(){
+    try{
+      const x=JSON.parse(localStorage.getItem(LOCATION_KEY)||'null');
+      if(x && Number.isFinite(Number(x.latitude)) && Number.isFinite(Number(x.longitude))) return x;
+    }catch(e){}
+    return {...DEFAULT_LOCATION};
+  }
+
+  function saveLocation(loc){
+    location={...loc};
+    try{localStorage.setItem(LOCATION_KEY,JSON.stringify(location))}catch(e){}
+    updateLocationLabel();
+  }
+
+  function cacheKey(){
+    return CACHE_PREFIX + `${Number(location.latitude).toFixed(4)},${Number(location.longitude).toFixed(4)}`;
+  }
 
   function weatherInfo(code,isDay=true){
     code=Number(code);
@@ -9414,17 +9501,28 @@ document.addEventListener('DOMContentLoaded',()=>{
   }
 
   function saveCache(data){
-    try{localStorage.setItem(CACHE_KEY,JSON.stringify({savedAt:Date.now(),data}))}catch(e){}
+    try{localStorage.setItem(cacheKey(),JSON.stringify({savedAt:Date.now(),data}))}catch(e){}
   }
+
   function readCache(){
     try{
-      const x=JSON.parse(localStorage.getItem(CACHE_KEY)||'null');
+      const x=JSON.parse(localStorage.getItem(cacheKey())||'null');
       return x&&x.data?x:null;
     }catch(e){return null}
   }
+
   function fmtUpdated(ts,cached=false){
     const d=new Date(ts||Date.now());
     return `${cached?'Cached · ':''}Updated ${d.toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'})}`;
+  }
+
+  function displayLocation(){
+    return [location.name,location.country].filter(Boolean).join(', ');
+  }
+
+  function updateLocationLabel(){
+    const label=document.getElementById('dash-weather-location');
+    if(label)label.textContent=`${displayLocation()} · live forecast`;
   }
 
   function render(data,meta={}){
@@ -9438,7 +9536,6 @@ document.addEventListener('DOMContentLoaded',()=>{
     const text=document.getElementById('dash-weather-meta');
     const forecast=document.getElementById('dash-weather-forecast');
     const updated=document.getElementById('dash-weather-updated');
-    const location=document.getElementById('dash-weather-location');
 
     if(temp)temp.textContent=Number.isFinite(Number(c.temperature_2m))?`${Math.round(Number(c.temperature_2m))}°`:'--°';
     if(icon)icon.textContent=info.icon;
@@ -9468,7 +9565,7 @@ document.addEventListener('DOMContentLoaded',()=>{
       forecast.innerHTML=cards;
     }
 
-    if(location)location.textContent='Riyadh · live forecast';
+    updateLocationLabel();
     if(updated)updated.textContent=fmtUpdated(meta.savedAt||Date.now(),!!meta.cached);
   }
 
@@ -9482,9 +9579,9 @@ document.addEventListener('DOMContentLoaded',()=>{
 
     try{
       const params=new URLSearchParams({
-        latitude:String(LAT),
-        longitude:String(LON),
-        timezone:TZ,
+        latitude:String(location.latitude),
+        longitude:String(location.longitude),
+        timezone:location.timezone||'auto',
         forecast_days:'7',
         current:'temperature_2m,apparent_temperature,relative_humidity_2m,weather_code,is_day',
         daily:'weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max'
@@ -9498,7 +9595,7 @@ document.addEventListener('DOMContentLoaded',()=>{
       lastFetch=Date.now();
       saveCache(data);
       render(data,{savedAt:lastFetch,cached:false});
-      if(force && typeof showToast==='function')showToast('Weather updated');
+      if(force && typeof showToast==='function')showToast(`Weather updated for ${location.name}`);
     }catch(e){
       console.warn('GLife weather refresh failed',e);
       const cached=readCache();
@@ -9519,9 +9616,53 @@ document.addEventListener('DOMContentLoaded',()=>{
     }
   }
 
+  async function searchCity(){
+    const input=document.getElementById('dash-weather-city-input');
+    const q=(input?.value||'').trim();
+    if(!q)return;
+
+    const updated=document.getElementById('dash-weather-updated');
+    if(updated)updated.textContent=`Searching for ${q}...`;
+
+    try{
+      const params=new URLSearchParams({
+        name:q,
+        count:'5',
+        language:'en',
+        format:'json'
+      });
+      const r=await fetch(`https://geocoding-api.open-meteo.com/v1/search?${params.toString()}`,{cache:'no-store'});
+      if(!r.ok)throw new Error(`City search failed (${r.status})`);
+      const j=await r.json();
+      const results=Array.isArray(j?.results)?j.results:[];
+      if(!results.length)throw new Error('No matching city found');
+
+      // Use the highest-ranked result returned by the geocoding service.
+      const x=results[0];
+      saveLocation({
+        name:x.name||q,
+        country:x.country||'',
+        admin1:x.admin1||'',
+        latitude:Number(x.latitude),
+        longitude:Number(x.longitude),
+        timezone:x.timezone||'auto'
+      });
+
+      lastFetch=0;
+      if(input)input.value='';
+      await fetchWeather(true);
+    }catch(e){
+      console.warn('GLife city search failed',e);
+      if(updated)updated.textContent='City not found. Try a more specific name.';
+      if(typeof showToast==='function')showToast('City not found');
+    }
+  }
+
   window.glifeWeatherRefresh=fetchWeather;
+  window.glifeWeatherSearchCity=searchCity;
 
   document.addEventListener('DOMContentLoaded',()=>{
+    updateLocationLabel();
     const cached=readCache();
     if(cached)render(cached.data,{savedAt:cached.savedAt,cached:true});
     setTimeout(()=>fetchWeather(true),500);
