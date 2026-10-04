@@ -1420,6 +1420,18 @@
 
 
 /* GLife v78: birthday calendar type */
+
+/* GLife v79: Birthday calendar styling */
+.calendar-item.birthday,
+.week-event.birthday{
+  background:color-mix(in srgb,#ec4899 16%,var(--life-card-soft,#f7f8fa))!important;
+  border-left-color:#ec4899!important;
+}
+.calendar-item.birthday::before,
+.week-event.birthday::before{
+  content:"🎂 ";
+}
+
 .life-calendar .event-birthday,
 .calendar-event.birthday,
 .cal-event.birthday,
@@ -7791,19 +7803,51 @@ function lifeCalEventOccurrences(event, startKey, endKey){
   const start = lifeCalParseKey(startKey), end = lifeCalParseKey(endKey);
   const base = lifeCalParseKey(event.date);
   const out = [];
-  const limit = new Date(end); limit.setDate(limit.getDate()+1);
-  let cur = new Date(base);
-  let safety = 0;
-  while(cur < limit && safety++ < 1500){
-    if(cur >= start){
-      const key=lifeCalDateKey(cur);
-      out.push({...event, occurrenceDate:key});
+  if(Number.isNaN(base.getTime())) return out;
+
+  const repeat=event.repeat||'none';
+  const baseDay=base.getDate();
+  const baseMonth=base.getMonth();
+
+  if(repeat==='none'){
+    if(base>=start && base<=end){
+      out.push({...event,occurrenceDate:lifeCalDateKey(base)});
     }
-    if(event.repeat==='daily') cur.setDate(cur.getDate()+1);
-    else if(event.repeat==='weekly') cur.setDate(cur.getDate()+7);
-    else if(event.repeat==='monthly') cur.setMonth(cur.getMonth()+1);
-    else break;
+    return out;
   }
+
+  let cur=new Date(base);
+  let occurrenceIndex=0;
+  let safety=0;
+
+  while(cur<=end && safety++<5000){
+    if(cur>=start){
+      out.push({...event,occurrenceDate:lifeCalDateKey(cur)});
+    }
+
+    occurrenceIndex++;
+
+    if(repeat==='daily'){
+      cur=new Date(base);
+      cur.setDate(base.getDate()+occurrenceIndex);
+    }else if(repeat==='weekly'){
+      cur=new Date(base);
+      cur.setDate(base.getDate()+occurrenceIndex*7);
+    }else if(repeat==='monthly'){
+      const targetMonth=base.getMonth()+occurrenceIndex;
+      const y=base.getFullYear()+Math.floor(targetMonth/12);
+      const m=((targetMonth%12)+12)%12;
+      const maxDay=new Date(y,m+1,0,12).getDate();
+      cur=new Date(y,m,Math.min(baseDay,maxDay),12);
+    }else if(repeat==='yearly'){
+      const y=base.getFullYear()+occurrenceIndex;
+      const maxDay=new Date(y,baseMonth+1,0,12).getDate();
+      cur=new Date(y,baseMonth,Math.min(baseDay,maxDay),12);
+    }else{
+      break;
+    }
+  }
+
   return out;
 }
 function lifeCalEventsForRange(startKey,endKey){
